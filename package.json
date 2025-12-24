@@ -14,6 +14,10 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "tailwindcss": "^4.1.18"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "^6.7.3",
     "@sveltejs/adapter-static": "^3.0.10",
