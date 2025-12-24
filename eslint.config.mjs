@@ -10,7 +10,7 @@ export default antfu({
     semi: true,
     quotes: "double",
   },
-  ignores: ["**/src-tauri/*"],
+  ignores: [".pnpm-store/**", "**/src-tauri/*"],
 }, {
   rules: {
     "svelte/max-attributes-per-line": [
