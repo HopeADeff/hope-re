@@ -1,7 +1,7 @@
 [package]
 name = "hope-ad"
 version = "2.0.1"
-description = "A Tauri App"
+description = "An AI-proofing arts app"
 authors = ["HopeADeff"]
 license = "MIT"
 repository = "https://github.com/HopeADeff/hope-re"
