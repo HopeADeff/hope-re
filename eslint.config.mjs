@@ -10,7 +10,11 @@ export default antfu({
     semi: true,
     quotes: "double",
   },
-  ignores: [".pnpm-store/**", "**/src-tauri/*"],
+  ignores: [
+    ".pnpm-store/**",
+    "**/src-tauri/gen/*",
+    "**/src-tauri/target/*",
+  ],
 }, {
   rules: {
     "svelte/max-attributes-per-line": [
@@ -36,7 +40,12 @@ export default antfu({
       "error",
       {
         case: "kebabCase",
-        ignore: ["\\.md$", "\\.yml$"],
+        ignore: [
+          "\\.md$",
+          "\\.yml$",
+          "\\.json$",
+          "\\.toml$",
+        ],
       },
     ],
   },
