@@ -50,5 +50,35 @@
     "scss",
     "pcss",
     "postcss"
-  ]
+  ],
+
+  // Enabling Rust Auto-format on save
+  "[rust]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+
+  // Rust-analyzer settings
+  "rust-analyzer.cargo.features": "all",
+  "rust-analyzer.procMacro.enable": true,
+  "rust-analyzer.diagnostics.enable": true,
+  "rust-analyzer.showUnlinkedFileNotification": false,
+
+  // Files
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+
+  // Exclude from file watcher (performance)
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/target/**": true,
+    "**/.pnpm-store/**": true,
+    "**/dist/**": true,
+    "**/.svelte-kit/**": true
+  }
 }

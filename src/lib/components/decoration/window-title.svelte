@@ -19,7 +19,7 @@
 
 <div
   data-tauri-drag-region
-  class="absolute inset-0 inset-x-0 left-0 right-0 top-0 flex h-[30px] select-none justify-end bg-background"
+  class="fixed inset-0 inset-x-0 left-0 right-0 top-0 z-100 flex h-[30px] select-none justify-end bg-background border-b border-border/20"
 >
   <button
     onclick={() => appWindow.minimize()}

@@ -9,7 +9,7 @@ edition = "2021"
 rust-version = "1.77.2"
 
 [lib]
-name = "app_lib"
+name = "hope_remade_lib"
 crate-type = [
   "staticlib",
   "cdylib",
@@ -26,3 +26,11 @@ log = "0.4"
 tauri = { version = "2.9.5", features = [] }
 tauri-plugin-log = "2"
 tauri-plugin-os = "2.3.2"
+tauri-plugin-store = "2.4.1"
+sysinfo = "0.36.1"
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.61.3", features = [
+  "Win32_Graphics_Dxgi",
+  "Win32_System_Com"
+] }

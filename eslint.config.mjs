@@ -44,6 +44,7 @@ export default antfu({
           "\\.md$",
           "\\.yml$",
           "\\.json$",
+          "\\.rs$",
           "\\.toml$",
         ],
       },

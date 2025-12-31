@@ -1,5 +1,1 @@
-import WindowTitle from "./window-title.svelte";
-
-export {
-  WindowTitle,
-};
+export { default as WindowTitle } from "./window-title.svelte";
