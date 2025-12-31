@@ -2,7 +2,7 @@ import { LazyStore } from "@tauri-apps/plugin-store";
 
 export type Theme = "light" | "dark" | "system";
 
-export function createTheme() {
+export function useTheme() {
   const store = new LazyStore("settings.json");
   let theme = $state<Theme>("system");
 
@@ -73,5 +73,3 @@ export function createTheme() {
     applyTheme,
   };
 }
-
-export const themeSetting = createTheme();

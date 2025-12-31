@@ -5,7 +5,7 @@
   import { Header, WindowTitle } from "$lib/components";
 
   import "../app.css";
-  import { themeSetting } from "$lib/stores/theme.svelte";
+  import { useTheme } from "$lib/stores/theme.svelte";
   import { onMount } from "svelte";
 
   const { children }: { children: Snippet } = $props();
@@ -17,8 +17,10 @@
     currentPlatform = platform();
   }
 
+  const theme = useTheme();
+
   onMount(async () => {
-    await themeSetting.initTheme();
+    await theme.initTheme();
   });
 </script>
 
