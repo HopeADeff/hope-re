@@ -15,6 +15,7 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "dependencies": {
+    "@fontsource/montserrat": "^5.2.8",
     "@tailwindcss/vite": "^4.1.18",
     "@tauri-apps/api": "^2.9.1",
     "@tauri-apps/plugin-os": "^2.3.2",
