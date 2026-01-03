@@ -72,7 +72,7 @@
   }
 
   const labelColour = $derived<string>(
-    readonly ? "text-emerald-600 dark:text-emerald-400" : "text-blue-600 text-blue-400",
+    readonly ? "text-emerald-600 dark:text-emerald-400" : "text-blue-600 dark:text-blue-400",
   );
 
   const labelBgColour = $derived<string>(
