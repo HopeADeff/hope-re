@@ -49,17 +49,17 @@
 </script>
 
 <Dialog.Root open={dialogOpen} onOpenChange={handleDialogOpen}>
-  <Dialog.DialogTrigger>
+  <Dialog.Trigger>
     <Button variant="outline"
             size="sm"
             class="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:bg-muted/50 hover:cursor-pointer transition-colors"
             aria-label="System Info">
       <InfoIcon class="size-4" />
     </Button>
-  </Dialog.DialogTrigger>
+  </Dialog.Trigger>
 
-  <Dialog.DialogContent class="max-w-md">
-    <Dialog.DialogHeader>
+  <Dialog.Content class="max-w-md">
+    <Dialog.Header>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div class="p-2 rounded-lg bg-primary/10">
@@ -70,7 +70,7 @@
           </Dialog.DialogTitle>
         </div>
       </div>
-    </Dialog.DialogHeader>
+    </Dialog.Header>
 
     <div class="mt-4">
       {#if loading && !info}
@@ -161,5 +161,5 @@
         </Button>
       </div>
     {/if}
-  </Dialog.DialogContent>
+  </Dialog.Content>
 </Dialog.Root>

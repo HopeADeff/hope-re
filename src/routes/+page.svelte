@@ -3,6 +3,10 @@
   import { Button } from "$lib/components/ui/button";
 </script>
 
+<svelte:head>
+  <title>Hope:RE</title>
+</svelte:head>
+
 <div>
   <h1 class="text-red-500 font-bold text-4xl">Hello Hope:RE</h1>
   <Button>

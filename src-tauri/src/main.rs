@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    hope_remade_lib::run();
+    hope_remake_lib::run();
 }
