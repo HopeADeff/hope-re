@@ -9,7 +9,7 @@ edition = "2021"
 rust-version = "1.77.2"
 
 [lib]
-name = "hope_remade_lib"
+name = "hope_remake_lib"
 crate-type = [
   "staticlib",
   "cdylib",
