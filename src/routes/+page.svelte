@@ -245,59 +245,49 @@
       {#if isMobile}
         <div class="flex flex-col gap-4 flex-1 min-h-0">
           {#if renderedImage}
-            <BaseImagePlaceholder
-              imageSrc={renderedImage}
-              label="Protected Image"
-              readonly
-            >
+            <BaseImagePlaceholder imageSrc={renderedImage}
+                                  label="Protected Image"
+                                  readonly>
               <RenderedImageActions
                 onDownload={handleDownload}
-                onFullscreen={handleFullscreen}
-              />
+                onFullscreen={handleFullscreen} />
             </BaseImagePlaceholder>
           {:else}
-            <BaseImagePlaceholder
-              imageSrc={originalImage}
-              label="Original Image"
-              onFileSelect={handleFileSelect}
-            />
+            <BaseImagePlaceholder imageSrc={originalImage}
+                                  label="Original Image"
+                                  onFileSelect={handleFileSelect} />
           {/if}
         </div>
       {:else}
         <div class="grid grid-cols-2 gap-6 flex-1">
-          <BaseImagePlaceholder
-            imageSrc={originalImage}
-            label="Original Image"
-            onFileSelect={handleFileSelect}
-          />
+          <BaseImagePlaceholder imageSrc={originalImage}
+                                label="Original Image"
+                                onFileSelect={handleFileSelect} />
 
-          <BaseImagePlaceholder
-            imageSrc={renderedImage}
-            label="Protected Image"
-            readonly
+          <BaseImagePlaceholder imageSrc={renderedImage}
+                                label="Protected Image"
+                                readonly
           >
             {#if renderedImage}
               <RenderedImageActions
                 onDownload={handleDownload}
-                onFullscreen={handleFullscreen}
-              />
+                onFullscreen={handleFullscreen} />
             {/if}
           </BaseImagePlaceholder>
         </div>
       {/if}
 
-      <ProtectionMenu
-        bind:algorithm
-        bind:targetStyle
-        bind:targetDescription
-        bind:inputPrompt
-        bind:intensity
-        bind:outputQuality
-        bind:renderQuality
-        {isProcessing}
-        {progress}
-        status={progressStatus}
-        progressMessage={progressMessage}
+      <ProtectionMenu bind:algorithm
+                      bind:targetStyle
+                      bind:targetDescription
+                      bind:inputPrompt
+                      bind:intensity
+                      bind:outputQuality
+                      bind:renderQuality
+                      {isProcessing}
+                      {progress}
+                      status={progressStatus}
+                      progressMessage={progressMessage}
       />
 
       <div class="grid grid-cols-2 gap-4 pb-4">
@@ -333,5 +323,4 @@
 
 <ImageFullscreenDialog
   bind:open={fullscreenOpen}
-  imageSrc={renderedImage}
-/>
+  imageSrc={renderedImage} />
