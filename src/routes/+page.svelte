@@ -236,60 +236,77 @@
 
 <svelte:head>
   <title>Hope:RE</title>
+  <meta name="description" content="Protect your images from unauthorized AI training with advanced algorithms like Glaze and Nightshade." />
 </svelte:head>
 
-<main class="flex-1 overflow-auto">
+<div class="w-full bg-background">
   <div class="container mx-auto p-4 md:p-6 h-full max-w-7xl">
     <div class="flex flex-col gap-6 h-full">
       {#if isMobile}
         <div class="flex flex-col gap-4 flex-1 min-h-0">
           {#if renderedImage}
-            <BaseImagePlaceholder imageSrc={renderedImage}
-                                  label="Protected Image"
-                                  readonly>
-              <RenderedImageActions onDownload={handleDownload}
-                                    onFullscreen={handleFullscreen} />
+            <BaseImagePlaceholder
+              imageSrc={renderedImage}
+              label="Protected Image"
+              readonly
+            >
+              <RenderedImageActions
+                onDownload={handleDownload}
+                onFullscreen={handleFullscreen}
+              />
             </BaseImagePlaceholder>
           {:else}
-            <BaseImagePlaceholder imageSrc={originalImage}
-                                  label="Original Image"
-                                  onFileSelect={handleFileSelect} />
+            <BaseImagePlaceholder
+              imageSrc={originalImage}
+              label="Original Image"
+              onFileSelect={handleFileSelect}
+            />
           {/if}
         </div>
       {:else}
         <div class="grid grid-cols-2 gap-6 flex-1">
-          <BaseImagePlaceholder imageSrc={originalImage}
-                                label="Original Image"
-                                onFileSelect={handleFileSelect} />
+          <BaseImagePlaceholder
+            imageSrc={originalImage}
+            label="Original Image"
+            onFileSelect={handleFileSelect}
+          />
 
-          <BaseImagePlaceholder imageSrc={renderedImage}
-                                label="Protected Image"
-                                readonly>
+          <BaseImagePlaceholder
+            imageSrc={renderedImage}
+            label="Protected Image"
+            readonly
+          >
             {#if renderedImage}
-              <RenderedImageActions onDownload={handleDownload}
-                                    onFullscreen={handleFullscreen} />
+              <RenderedImageActions
+                onDownload={handleDownload}
+                onFullscreen={handleFullscreen}
+              />
             {/if}
           </BaseImagePlaceholder>
         </div>
       {/if}
 
-      <ProtectionMenu bind:algorithm
-                      bind:targetStyle
-                      bind:targetDescription
-                      bind:inputPrompt
-                      bind:intensity
-                      bind:outputQuality
-                      bind:renderQuality
-                      {isProcessing}
-                      {progress}
-                      status={progressStatus}
-                      progressMessage={progressMessage} />
+      <ProtectionMenu
+        bind:algorithm
+        bind:targetStyle
+        bind:targetDescription
+        bind:inputPrompt
+        bind:intensity
+        bind:outputQuality
+        bind:renderQuality
+        {isProcessing}
+        {progress}
+        status={progressStatus}
+        progressMessage={progressMessage}
+      />
 
       <div class="grid grid-cols-2 gap-4 pb-4">
-        <Button size="lg"
-                class="gap-2 h-14 bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                onclick={handleProtect}
-                disabled={!canProcess}>
+        <Button
+          size="lg"
+          class="gap-2 h-14 bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          onclick={handleProtect}
+          disabled={!canProcess}
+        >
           {#if isProcessing}
             <LoaderCircleIcon class="size-5 animate-spin" />
             <span class="font-semibold">Processing...</span>
@@ -299,18 +316,22 @@
           {/if}
         </Button>
 
-        <Button variant="outline"
-                size="lg"
-                class="gap-2 h-14 border-2 hover:bg-destructive/10 hover:border-destructive/50 hover:text-destructive transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                onclick={handleCancel}
-                disabled={!hasImage}>
+        <Button
+          variant="outline"
+          size="lg"
+          class="gap-2 h-14 border-2 hover:bg-destructive/10 hover:border-destructive/50 hover:text-destructive transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          onclick={handleCancel}
+          disabled={!hasImage}
+        >
           <XIcon class="size-5" />
           <span class="font-semibold">Cancel</span>
         </Button>
       </div>
     </div>
   </div>
-</main>
+</div>
 
-<ImageFullscreenDialog bind:open={fullscreenOpen}
-                       imageSrc={renderedImage} />
+<ImageFullscreenDialog
+  bind:open={fullscreenOpen}
+  imageSrc={renderedImage}
+/>
