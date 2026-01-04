@@ -1,6 +1,7 @@
 <script lang="ts">
   import { PaletteIcon } from "@lucide/svelte";
   import * as Select from "$lib/components/ui/select";
+  import { algorithms } from "$lib/constants";
   import { cn } from "$lib/utils";
 
   type AlgorithmSelectProps = {
@@ -8,36 +9,6 @@
   };
 
   let { value = $bindable("noise") }: AlgorithmSelectProps = $props();
-
-  const algorithms: {
-    value: string;
-    label: string;
-    description: string;
-    colour: string;
-    bgColour: string;
-  }[] = [
-    {
-      value: "noise",
-      label: "Noise",
-      description: "Add adversarial noise",
-      colour: "text-blue-500",
-      bgColour: "bg-blue-500/10",
-    },
-    {
-      value: "glaze",
-      label: "Glaze",
-      description: "Style transfer protection",
-      colour: "text-purple-500",
-      bgColour: "bg-purple-500/10",
-    },
-    {
-      value: "nightshade",
-      label: "Nightshade",
-      description: "Data poisoning protection",
-      colour: "text-red-500",
-      bgColour: "bg-red-500/10",
-    },
-  ];
 
   const triggerContent = $derived(
     algorithms.find(algo => algo.value === value)?.label ?? "Select an algorithm",

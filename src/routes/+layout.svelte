@@ -5,6 +5,7 @@
   import { Header, WindowTitle } from "$lib/components";
 
   import "../app.css";
+  import { Toaster } from "$lib/components/ui/sonner";
   import { useTheme } from "$lib/stores/theme.svelte";
   import { onMount } from "svelte";
 
@@ -27,5 +28,6 @@
 {#if isWindows}
   <WindowTitle />
 {/if}
+<Toaster />
 <Header />
 {@render children()}

@@ -1,24 +1,13 @@
 <script lang="ts">
   import { TargetIcon } from "@lucide/svelte";
   import * as Select from "$lib/components/ui/select";
+  import { targetStyles } from "$lib/constants";
 
   type TargetStyleSelectProps = {
     value?: string;
   };
 
   let { value = $bindable("abstract") }: TargetStyleSelectProps = $props();
-
-  const targetStyles: {
-    value: string;
-    label: string;
-    emoji: string;
-  }[] = [
-    { value: "abstract", label: "Abstract", emoji: "🎨" },
-    { value: "impressionist", label: "Impressionist", emoji: "📸" },
-    { value: "cubist", label: "Cubist", emoji: "🟥" },
-    { value: "sketch", label: "Sketch", emoji: "✏️" },
-    { value: "watercolor", label: "Watercolor", emoji: "💧" },
-  ];
 
   const contentTrigger = $derived(
     targetStyles.find(style => style.value === value)?.label ?? "Select a style",
