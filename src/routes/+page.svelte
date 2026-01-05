@@ -96,7 +96,6 @@
     if (!originalImage)
       return;
 
-    // Validate algorithm-specific inputs
     if (algorithm === "noise" && !targetDescription.trim()) {
       toast.error("Please enter a target description");
       return;
@@ -248,9 +247,8 @@
             <BaseImagePlaceholder imageSrc={renderedImage}
                                   label="Protected Image"
                                   readonly>
-              <RenderedImageActions
-                onDownload={handleDownload}
-                onFullscreen={handleFullscreen} />
+              <RenderedImageActions onDownload={handleDownload}
+                                    onFullscreen={handleFullscreen} />
             </BaseImagePlaceholder>
           {:else}
             <BaseImagePlaceholder imageSrc={originalImage}
@@ -266,12 +264,10 @@
 
           <BaseImagePlaceholder imageSrc={renderedImage}
                                 label="Protected Image"
-                                readonly
-          >
+                                readonly>
             {#if renderedImage}
-              <RenderedImageActions
-                onDownload={handleDownload}
-                onFullscreen={handleFullscreen} />
+              <RenderedImageActions onDownload={handleDownload}
+                                    onFullscreen={handleFullscreen} />
             {/if}
           </BaseImagePlaceholder>
         </div>
@@ -321,6 +317,5 @@
   </div>
 </div>
 
-<ImageFullscreenDialog
-  bind:open={fullscreenOpen}
-  imageSrc={renderedImage} />
+<ImageFullscreenDialog bind:open={fullscreenOpen}
+                       imageSrc={renderedImage} />
