@@ -3,11 +3,7 @@
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
 
-  type ImageFullscreenDialogProps = {
-    open?: boolean;
-    imageSrc: string | null;
-    onOpenChange?: (open: boolean) => void;
-  };
+  import type { ImageFullscreenDialogProps } from "./types";
 
   let {
     open = $bindable(false),

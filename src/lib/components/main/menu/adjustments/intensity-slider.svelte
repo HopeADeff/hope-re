@@ -4,9 +4,7 @@
   import { Slider } from "$lib/components/ui/slider";
   import { cn } from "$lib/utils";
 
-  type IntensitySliderProps = {
-    value?: number[];
-  };
+  import type { IntensitySliderProps } from "../types";
 
   let { value = $bindable([20]) }: IntensitySliderProps = $props();
 
@@ -56,7 +54,6 @@
             min={1}
             max={25}
             step={1}
-            class="**:[[role-slider]]:bg-orange-500 **:[[role-slider]]:border-orange-600 **:[[role-slider]]:shadow-lg"
             aria-label="Intensity control" />
 
     <div class="flex justify-between items-center text-xs text-muted-foreground">

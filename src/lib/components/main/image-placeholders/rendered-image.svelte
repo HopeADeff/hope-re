@@ -2,10 +2,7 @@
   import { DownloadIcon, Maximize2Icon } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button";
 
-  type RenderedImageActionsProps = {
-    onDownload?: () => void;
-    onFullscreen?: () => void;
-  };
+  import type { RenderedImageActionsProps } from "./types";
 
   const { onDownload, onFullscreen }: RenderedImageActionsProps = $props();
 </script>

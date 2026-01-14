@@ -8,12 +8,7 @@
   import { Progress } from "$lib/components/ui/progress";
   import { cn } from "$lib/utils";
 
-  type ProtectionProgressProps = {
-    isProcessing?: boolean;
-    progress?: number;
-    status?: "idle" | "processing" | "success" | "error";
-    message?: string;
-  };
+  import type { ProtectionProgressProps } from "../types";
 
   const {
     isProcessing = false,
