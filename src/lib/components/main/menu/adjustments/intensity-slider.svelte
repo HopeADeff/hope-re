@@ -13,17 +13,17 @@
   const intensityDisplay = $derived((value[0] / 100).toFixed(2));
 
   const instensityColour = $derived(
-    value[0] < 33
+    value[0] < 9
       ? "bg-green-500"
-      : value[0] < 66
+      : value[0] < 17
       ? "bg-orange-500"
       : "bg-red-500",
   );
 
   const intensityLevel = $derived(
-    value[0] < 33
+    value[0] < 9
       ? "Low"
-      : value[0] < 66
+      : value[0] < 17
       ? "Medium"
       : "High",
   );

@@ -1,6 +1,6 @@
 // Adjustments Components Props
 export type AlgorithmSelectProps = {
-  value?: string;
+  value?: "noise" | "glaze" | "nightshade";
 };
 
 export type InputPromptProps = {
@@ -37,7 +37,7 @@ export type ProtectionProgressProps = {
 
 // Menu Props
 export type ProtectionMenuProps = {
-  algorithm?: string;
+  algorithm?: "noise" | "glaze" | "nightshade";
   targetStyle?: string;
   targetDescription?: string;
   inputPrompt?: string;
