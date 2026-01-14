@@ -3,9 +3,7 @@
   import { Badge } from "$lib/components/ui/badge";
   import { Textarea } from "$lib/components/ui/textarea";
 
-  type InputPromptProps = {
-    value?: string;
-  };
+  import type { InputPromptProps } from "../types";
 
   let { value = $bindable("") }: InputPromptProps = $props();
 

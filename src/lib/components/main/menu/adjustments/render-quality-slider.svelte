@@ -5,9 +5,7 @@
   import { qualityPresets } from "$lib/constants";
   import { cn } from "$lib/utils";
 
-  type RenderQualitySliderProps = {
-    value?: number[];
-  };
+  import type { RenderQualitySliderProps } from "../types";
 
   let { value = $bindable([50]) }: RenderQualitySliderProps = $props();
 
@@ -51,7 +49,6 @@
             min={0}
             max={100}
             step={25}
-            class="**:[[role=slider]]:bg-blue-500 **:[[role=slider]]:border-blue-600 **:[[role=slider]]:shadow-lg"
             aria-label="Render quality control" />
 
     <div class="flex justify-between items-start">

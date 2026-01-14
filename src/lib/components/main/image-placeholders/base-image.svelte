@@ -1,19 +1,9 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
-
   import { ImageIcon, SparklesIcon, UploadIcon } from "@lucide/svelte";
   import { Badge } from "$lib/components/ui/badge";
   import { cn } from "$lib/utils";
 
-  type BaseImagePlaceholderProps = {
-    files?: FileList | null;
-    elementRef?: HTMLInputElement;
-    imageSrc?: string | null;
-    label: string;
-    onFileSelect?: (file: FileList) => void;
-    readonly?: boolean;
-    children?: Snippet | null;
-  };
+  import type { BaseImagePlaceholderProps } from "./types";
 
   let {
     files = $bindable(),

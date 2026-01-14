@@ -4,9 +4,7 @@
   import { algorithms } from "$lib/constants";
   import { cn } from "$lib/utils";
 
-  type AlgorithmSelectProps = {
-    value?: string;
-  };
+  import type { AlgorithmSelectProps } from "../types";
 
   let { value = $bindable("noise") }: AlgorithmSelectProps = $props();
 

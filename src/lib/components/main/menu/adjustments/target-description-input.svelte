@@ -3,9 +3,7 @@
   import { Badge } from "$lib/components/ui/badge";
   import { Textarea } from "$lib/components/ui/textarea";
 
-  type TargetDescriptionInputProps = {
-    value?: string;
-  };
+  import type { TargetDescriptionInputProps } from "../types";
 
   let { value = $bindable("") }: TargetDescriptionInputProps = $props();
 

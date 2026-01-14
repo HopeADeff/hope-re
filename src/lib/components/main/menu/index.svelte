@@ -17,7 +17,7 @@
   import { ProtectionProgress } from "./protection-progress";
 
   let {
-    algorithm = $bindable("glaze"),
+    algorithm = $bindable("noise"),
     targetStyle = $bindable("abstract"),
     targetDescription = $bindable(""),
     inputPrompt = $bindable(""),

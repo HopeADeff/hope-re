@@ -3,9 +3,7 @@
   import * as Select from "$lib/components/ui/select";
   import { targetStyles } from "$lib/constants";
 
-  type TargetStyleSelectProps = {
-    value?: string;
-  };
+  import type { TargetStyleSelectProps } from "../types";
 
   let { value = $bindable("abstract") }: TargetStyleSelectProps = $props();
 

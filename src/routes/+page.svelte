@@ -18,7 +18,7 @@
   let progressStatus = $state<"idle" | "processing" | "success" | "error">("idle");
   let progressMessage = $state<string>("");
 
-  let algorithm = $state("glaze");
+  let algorithm = $state("noise");
   let targetStyle = $state("abstract");
   let targetDescription = $state("");
   let inputPrompt = $state("");
@@ -283,8 +283,7 @@
                       {isProcessing}
                       {progress}
                       status={progressStatus}
-                      progressMessage={progressMessage}
-      />
+                      progressMessage={progressMessage} />
 
       <div class="grid grid-cols-2 gap-4 pb-4">
         <Button

@@ -4,9 +4,7 @@
   import { Slider } from "$lib/components/ui/slider";
   import { cn } from "$lib/utils";
 
-  type OutputQualitySliderProps = {
-    value?: number[];
-  };
+  import type { OutputQualitySliderProps } from "../types";
 
   let { value = $bindable([92]) }: OutputQualitySliderProps = $props();
 
@@ -50,8 +48,7 @@
             bind:value
             min={85}
             max={98}
-            step={1}
-            class="**:[[role=slider]]:bg-green-500 **:[[role=slider]]:border-green-600 **:[[role=slider]]:shadow-lg" />
+            step={1} />
 
     <div class="flex justify-between text-xs text-muted-foreground">
       <span>85 <span class="text-yellow-500">&lpar;small&rpar;</span></span>
