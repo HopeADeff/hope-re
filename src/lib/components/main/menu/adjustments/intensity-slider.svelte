@@ -73,6 +73,6 @@
   </div>
 
   <p class="text-xs text-muted-foreground">
-    Controls the strength of protection. Higher values = stronger protection but more visible changes.
+    Controls the strength of protection. Higher values &equals; stronger protection but more visible changes.
   </p>
 </div>

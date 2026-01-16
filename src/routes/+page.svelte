@@ -1,4 +1,9 @@
 <script lang="ts">
+  import type {
+    ProtectionMenuProps,
+    ProtectionProgressProps,
+  } from "$lib/components";
+
   import { LoaderCircleIcon, ShieldIcon, XIcon } from "@lucide/svelte";
   import {
     BaseImagePlaceholder,
@@ -15,11 +20,11 @@
   let fullscreenOpen = $state<boolean>(false);
 
   let progress = $state<number>(0);
-  let progressStatus = $state<"idle" | "processing" | "success" | "error">("idle");
+  let progressStatus = $state<ProtectionProgressProps["status"]>("idle");
   let progressMessage = $state<string>("");
 
-  let algorithm = $state("noise");
-  let targetStyle = $state("abstract");
+  let algorithm = $state<ProtectionMenuProps["algorithm"]>("noise");
+  let targetStyle = $state<ProtectionMenuProps["targetStyle"]>("abstract");
   let targetDescription = $state("");
   let inputPrompt = $state("");
   let intensity = $state([20]);

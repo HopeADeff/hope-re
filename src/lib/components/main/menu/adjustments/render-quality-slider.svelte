@@ -20,7 +20,15 @@
       ? "default"
       : value[0] === 50
       ? "secondary"
-      : "outline",
+      : "default",
+  );
+
+  const badgeColourClass = $derived(
+    value[0] === 75
+      ? "bg-orange-500"
+      : value[0] === 25
+      ? "bg-red-500"
+      : "",
   );
 </script>
 
@@ -32,7 +40,7 @@
       </div>
       <label for={sliderId} class="text-sm font-semibold">Render Quality</label>
     </div>
-    <Badge variant={badgeVariant} class="gap-1.5">
+    <Badge variant={badgeVariant} class={cn("gap-1.5", badgeColourClass)}>
       {@const Icon = currentPreset.icon}
       <Icon class="size-3" />
       <span class="text-xs font-semibold">{currentPreset.label}</span>
@@ -40,7 +48,7 @@
   </div>
 
   <p class="text-xs text-muted-foreground">
-    Processing time for Glaze/Nightshade/Noise. Higher = better quality but slower.
+    Processing time for Glaze &sol; Nightshade &sol; Noise. Higher &equals; better quality but slower.
   </p>
 
   <div class="space-y-3">

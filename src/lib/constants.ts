@@ -2,8 +2,10 @@ import type { Icon as IconType } from "@lucide/svelte";
 
 import { ClockIcon, GaugeIcon, ZapIcon } from "@lucide/svelte";
 
+import type { ProtectionMenuProps } from "./components";
+
 export const algorithms: {
-  value: string;
+  value: Exclude<ProtectionMenuProps["algorithm"], undefined>;
   label: string;
   description: string;
   colour: string;
@@ -33,7 +35,7 @@ export const algorithms: {
 ];
 
 export const targetStyles: {
-  value: string;
+  value: Exclude<ProtectionMenuProps["targetStyle"], undefined>;
   label: string;
   emoji: string;
 }[] = [
@@ -56,7 +58,7 @@ export const qualityPresets: {
     label: "Faster",
     time: "~20 mins",
     icon: ZapIcon,
-    colour: "text-green-500",
+    colour: "text-emerald-500",
   },
   {
     value: 25,

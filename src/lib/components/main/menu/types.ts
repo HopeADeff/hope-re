@@ -1,33 +1,4 @@
-// Adjustments Components Props
-export type AlgorithmSelectProps = {
-  value?: "noise" | "glaze" | "nightshade";
-};
-
-export type InputPromptProps = {
-  value?: string;
-};
-
-export type IntensitySliderProps = {
-  value?: number[];
-};
-
-export type OutputQualitySliderProps = {
-  value?: number[];
-};
-
-export type RenderQualitySliderProps = {
-  value?: number[];
-};
-
-export type TargetDescriptionInputProps = {
-  value?: string;
-};
-
-export type TargetStyleSelectProps = {
-  value?: string;
-};
-
-// Progress Bar Props
+// Protection Progress types
 export type ProtectionProgressProps = {
   isProcessing?: boolean;
   progress?: number;
@@ -35,17 +6,43 @@ export type ProtectionProgressProps = {
   message?: string;
 };
 
-// Menu Props
-export type ProtectionMenuProps = {
+// Protection Menu types
+export type ProtectionMenuProps = Omit<ProtectionProgressProps, "message"> & {
   algorithm?: "noise" | "glaze" | "nightshade";
-  targetStyle?: string;
+  targetStyle?: "abstract" | "impressionist" | "cubist" | "sketch" | "watercolor";
   targetDescription?: string;
   inputPrompt?: string;
   intensity?: number[];
   outputQuality?: number[];
   renderQuality?: number[];
-  isProcessing?: boolean;
-  progress?: number;
-  status?: "idle" | "processing" | "success" | "error";
-  progressMessage?: string;
+  progressMessage: ProtectionProgressProps["message"];
+};
+
+// Adjustments / Setting Components types
+export type AlgorithmSelectProps = {
+  value?: ProtectionMenuProps["algorithm"];
+};
+
+export type InputPromptProps = {
+  value?: ProtectionMenuProps["inputPrompt"];
+};
+
+export type IntensitySliderProps = {
+  value?: ProtectionMenuProps["intensity"];
+};
+
+export type OutputQualitySliderProps = {
+  value?: ProtectionMenuProps["outputQuality"];
+};
+
+export type RenderQualitySliderProps = {
+  value?: ProtectionMenuProps["renderQuality"];
+};
+
+export type TargetDescriptionInputProps = {
+  value?: ProtectionMenuProps["targetDescription"];
+};
+
+export type TargetStyleSelectProps = {
+  value?: ProtectionMenuProps["targetStyle"];
 };
