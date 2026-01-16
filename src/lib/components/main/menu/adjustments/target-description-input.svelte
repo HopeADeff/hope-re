@@ -33,6 +33,6 @@
             maxlength={maxChars} />
 
   <p class="text-xs text-muted-foreground">
-    Describe what you want to protect your image from &lpar;e.g., &quot;abstract art style&quot;, &quot;anime rendering&quot;&rpar;.
+    Describe what you want to protect your image from &lpar;e.g., &ldquo;abstract art style&rdquo;, &ldquo;anime rendering&rdquo;&rpar;.
   </p>
 </div>

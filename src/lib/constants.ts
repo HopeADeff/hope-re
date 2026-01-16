@@ -5,7 +5,7 @@ import { ClockIcon, GaugeIcon, ZapIcon } from "@lucide/svelte";
 import type { ProtectionMenuProps } from "./components";
 
 export const algorithms: {
-  value: ProtectionMenuProps["algorithm"];
+  value: Exclude<ProtectionMenuProps["algorithm"], undefined>;
   label: string;
   description: string;
   colour: string;
@@ -35,7 +35,7 @@ export const algorithms: {
 ];
 
 export const targetStyles: {
-  value: ProtectionMenuProps["targetStyle"];
+  value: Exclude<ProtectionMenuProps["targetStyle"], undefined>;
   label: string;
   emoji: string;
 }[] = [
