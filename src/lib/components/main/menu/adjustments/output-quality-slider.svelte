@@ -58,6 +58,6 @@
   </div>
 
   <p class="text-xs text-muted-foreground">
-    Image compression quality. Higher values = larger file size but better visual quality.
+    Image compression quality. Higher values &equals; larger file size but better visual quality.
   </p>
 </div>
