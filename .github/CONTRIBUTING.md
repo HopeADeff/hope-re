@@ -1,4 +1,4 @@
-# Đóng góp cho Hope V1.0.0
+# Đóng góp cho Hope V2.0.1
 
 Chúng tôi rất mong bạn đóng góp cho dự án này và giúp nó trở nên tốt hơn nữa!
 Là một người đóng góp, dưới đây là các hướng dẫn mà chúng tôi mong bạn tuân thủ:

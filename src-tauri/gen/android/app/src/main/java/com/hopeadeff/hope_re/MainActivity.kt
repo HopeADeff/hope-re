@@ -1,4 +1,4 @@
-package com.hope_tauri.re
+package com.HopeADeff.hope_re
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

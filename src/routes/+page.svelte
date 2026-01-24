@@ -4,7 +4,11 @@
     ProtectionProgressProps,
   } from "$lib/components";
 
-  import { LoaderCircleIcon, ShieldIcon, XIcon } from "@lucide/svelte";
+  import {
+    LoaderCircleIcon,
+    ShieldIcon,
+    XIcon,
+  } from "@lucide/svelte";
   import {
     BaseImagePlaceholder,
     ImageFullscreenDialog,

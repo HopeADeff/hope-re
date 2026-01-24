@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { XIcon, ZoomInIcon, ZoomOutIcon } from "@lucide/svelte";
+  import {
+    XIcon,
+    ZoomInIcon,
+    ZoomOutIcon,
+  } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
 
