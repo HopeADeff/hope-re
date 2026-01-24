@@ -1,5 +1,9 @@
 <script lang="ts">
-  import { ImageIcon, SparklesIcon, UploadIcon } from "@lucide/svelte";
+  import {
+    ImageIcon,
+    SparklesIcon,
+    UploadIcon,
+  } from "@lucide/svelte";
   import { Badge } from "$lib/components/ui/badge";
   import { cn } from "$lib/utils";
 

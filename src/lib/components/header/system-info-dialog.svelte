@@ -13,38 +13,22 @@
   } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
-  import { useSystemInfo } from "$lib/stores/system-info.svelte";
+  import { useSystemInfo } from "$lib/queries/system-info";
   import { cn } from "$lib/utils";
 
-  const systemInfo = useSystemInfo();
+  const {
+    data: info,
+    isLoading,
+    isError,
+    error,
+    isFetching,
+    refetch,
+  } = $derived(useSystemInfo());
 
   let dialogOpen = $state<boolean>(false);
-  let isRefreshing = $state<boolean>(false);
 
-  const info = $derived(systemInfo.systemInfo);
-  const loading = $derived(systemInfo.isLoading);
-  const errorMessage = $derived(systemInfo.error);
-
-  async function handleDialogOpen(open: boolean) {
+  function handleDialogOpen(open: boolean) {
     dialogOpen = open;
-
-    if (open && !info) {
-      await systemInfo.fetchSystemInfo();
-    }
-
-    if (!open) {
-      systemInfo.resetSystemInfo();
-    }
-  }
-
-  async function handleRefresh() {
-    isRefreshing = true;
-    try {
-      await systemInfo.fetchSystemInfo();
-    }
-    finally {
-      isRefreshing = false;
-    }
   }
 </script>
 
@@ -73,21 +57,21 @@
     </Dialog.Header>
 
     <div class="mt-4">
-      {#if loading && !info}
+      {#if isLoading && !info}
         <div class="flex flex-col items-center justify-center py-12">
           <LoaderCircleIcon class="size-10 animate-spin text-primary mb-3" />
           <p class="text-sm text-muted-foreground">Loading system info...</p>
         </div>
-      {:else if errorMessage}
+      {:else if isError}
         <div class="flex items-start gap-3 p-4 rounded-lg bg-destructive/10 border border-destructive/20">
           <CircleAlertIcon class="size-5 text-destructive shrink-0 mt-0.5" />
           <div>
             <p class="text-sm font-medium text-destructive">Failed to load system information</p>
-            <p class="text-xs text-muted-foreground mt-1">{errorMessage}</p>
+            <p class="text-xs text-muted-foreground mt-1">{error?.message || "Unknown Error"}</p>
           </div>
         </div>
       {:else if info}
-        <div class={cn(isRefreshing && "opacity-50")}>
+        <div class={cn(isFetching && "opacity-50 transition-opacity")}>
           <div class="rounded-lg border bg-card p-6 space-y-4">
             <div class="pb-4 border-b">
               <div class="flex items-center gap-2 mb-2">
@@ -144,7 +128,7 @@
       {/if}
     </div>
 
-    {#if info && !loading}
+    {#if info && !isLoading}
       <div class="flex items-center justify-between pt-4 border-t">
         <p class="text-xs text-muted-foreground">
           Last updated: {new Date().toLocaleTimeString()}
@@ -152,11 +136,11 @@
         <Button
           variant="outline"
           size="sm"
-          onclick={handleRefresh}
-          disabled={isRefreshing}
+          onclick={refetch}
+          disabled={isFetching}
           class="gap-2"
         >
-          <RefreshCwIcon class={cn("size-3.5", isRefreshing && "animate-spin")} />
+          <RefreshCwIcon class={cn("size-3.5", isFetching && "animate-spin")} />
           <span>Refresh</span>
         </Button>
       </div>

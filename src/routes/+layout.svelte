@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
 
+  import { QueryClientProvider } from "@tanstack/svelte-query";
+  import { SvelteQueryDevtools } from "@tanstack/svelte-query-devtools";
   import { platform } from "@tauri-apps/plugin-os";
   import { Header, WindowTitle } from "$lib/components";
 
@@ -10,7 +12,14 @@
   import { cn } from "$lib/utils";
   import { onMount } from "svelte";
 
-  const { children }: { children: Snippet } = $props();
+  import type { LayoutData } from "./$types";
+
+  type LayoutDataProps = {
+    children: Snippet;
+    data: LayoutData;
+  };
+
+  const { children, data }: LayoutDataProps = $props();
 
   let currentPlatform = $state<string>("");
   const isWindows = $derived(currentPlatform === "windows");
@@ -26,15 +35,22 @@
   });
 </script>
 
-<Toaster position="top-center" />
+<QueryClientProvider client={data.queryClient}>
 
-{#if isWindows}
-  <WindowTitle />
-{/if}
+  <Toaster position="top-center" />
 
-<div class={cn("h-screen flex flex-col overflow-hidden", isWindows && "pt-[30px]")}>
-  <Header />
-  <main class="flex-1 overflow-auto">
-    {@render children()}
-  </main>
-</div>
+  {#if isWindows}
+    <WindowTitle />
+  {/if}
+
+  <div class={cn("h-screen flex flex-col overflow-hidden", isWindows && "pt-[30px]")}>
+    <Header />
+    <main class="flex-1 overflow-auto">
+      {@render children()}
+    </main>
+  </div>
+
+  {#if import.meta.env.DEV}
+    <SvelteQueryDevtools initialIsOpen={false} />
+  {/if}
+</QueryClientProvider>
