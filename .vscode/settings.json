@@ -10,7 +10,8 @@
   },
 
   "files.associations": {
-    "*.css": "tailwindcss"
+    "*.css": "tailwindcss",
+    "*.ipynb": "jupyter-notebook"
   },
 
   // Silent the stylistic rules in you IDE, but still auto fix them
@@ -80,5 +81,17 @@
     "**/.pnpm-store/**": true,
     "**/dist/**": true,
     "**/.svelte-kit/**": true
+  },
+
+  // Python / Jupyter Notebooks settings
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-python.python"
+  },
+  "notebook.output.textLineLimit": 500,
+  "notebook.lineNumbers": "on",
+  "notebook.cellToolbarLocation": {
+    "default": "right",
+    "jupyter-notebook": "left"
   }
 }
