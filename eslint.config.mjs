@@ -46,6 +46,7 @@ export default antfu({
           "\\.json$",
           "\\.rs$",
           "\\.toml$",
+          "\\.ipynb$",
         ],
       },
     ],
