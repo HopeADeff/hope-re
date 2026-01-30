@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Hope",
+  "productName": "Hope-RE",
   "version": "2.0.1",
   "identifier": "com.HopeADeff.hope-re",
   "build": {
