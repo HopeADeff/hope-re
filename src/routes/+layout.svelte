@@ -36,7 +36,6 @@
 </script>
 
 <QueryClientProvider client={data.queryClient}>
-
   <Toaster position="top-center" />
 
   {#if isWindows}
