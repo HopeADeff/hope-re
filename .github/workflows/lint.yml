@@ -6,8 +6,9 @@ on:
       - main
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
+    environment: Build
 
     steps:
       - name: Checkout
