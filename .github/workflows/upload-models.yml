@@ -1,0 +1,50 @@
+name: Upload Model Binaries
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src-models/models/*.onnx"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout with LFS
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Validate ONNX files exist
+        run: |
+          count=$(find src-models/models -name '*.onnx' -type f | wc -l)
+          if [ "$count" -eq 0 ]; then
+            echo "::error::No .onnx files found in src-models/models/"
+            exit 1
+          fi
+          echo "Found $count ONNX model(s):"
+          ls -lh src-models/models/*.onnx
+
+      - name: Delete existing release if present
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release delete models-latest --yes --cleanup-tag 2>/dev/null || true
+
+      - name: Create release and upload models
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create models-latest \
+            --title "Model Binaries" \
+            --notes "ONNX model binaries for Hope-RE.
+
+          Updated from [\`${GITHUB_SHA::7}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) on $(date -u +'%Y-%m-%d %H:%M UTC')." \
+            --latest=false \
+            src-models/models/*.onnx
