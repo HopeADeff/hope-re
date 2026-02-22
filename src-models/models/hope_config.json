@@ -1,0 +1,152 @@
+{
+  "input": {
+    "size": 224,
+    "format": "NHWC",
+    "dtype": "float32",
+    "range": [
+      0.0,
+      1.0
+    ],
+    "preprocessing": "included_in_model"
+  },
+  "output": {
+    "type": "scalar",
+    "dtype": "float32",
+    "description": "loss value to minimize via PGD"
+  },
+  "noise": {
+    "file": "noise_algorithm.onnx",
+    "inputs": [
+      {
+        "name": "input",
+        "shape": [
+          1,
+          224,
+          224,
+          3
+        ],
+        "dtype": "float32"
+      }
+    ],
+    "parameters": {
+      "intensity": 0.06,
+      "iterations": 200,
+      "alpha_multiplier": 2.0
+    }
+  },
+  "glaze": {
+    "file": "glaze_algorithm.onnx",
+    "inputs": [
+      {
+        "name": "input",
+        "shape": [
+          1,
+          224,
+          224,
+          3
+        ],
+        "dtype": "float32"
+      },
+      {
+        "name": "style_index",
+        "shape": [
+          1
+        ],
+        "dtype": "int32"
+      }
+    ],
+    "styles": [
+      "Abstract",
+      "Impressionist",
+      "Cubist",
+      "Sketch",
+      "Watercolor"
+    ],
+    "parameters": {
+      "intensity": 0.035,
+      "iterations": 300,
+      "learning_rate": 0.01,
+      "perceptual_weight": 1.0,
+      "alpha_multiplier": 2.0
+    },
+    "presets": {
+      "invisible": {
+        "intensity": 0.025,
+        "iterations": 350,
+        "perceptual_weight": 1.2,
+        "description": "Maximum invisibility, moderate protection"
+      },
+      "balanced": {
+        "intensity": 0.035,
+        "iterations": 300,
+        "perceptual_weight": 1.0,
+        "description": "Balance between invisibility and protection"
+      },
+      "strong": {
+        "intensity": 0.05,
+        "iterations": 250,
+        "perceptual_weight": 0.6,
+        "description": "Stronger protection, slightly visible"
+      }
+    }
+  },
+  "nightshade": {
+    "file": "nightshade_algorithm.onnx",
+    "inputs": [
+      {
+        "name": "input",
+        "shape": [
+          1,
+          224,
+          224,
+          3
+        ],
+        "dtype": "float32"
+      },
+      {
+        "name": "target_index",
+        "shape": [
+          1
+        ],
+        "dtype": "int32"
+      }
+    ],
+    "targets": [
+      "Dog",
+      "Cat",
+      "Car",
+      "Landscape",
+      "Person",
+      "Building",
+      "Food",
+      "Abstract"
+    ],
+    "parameters": {
+      "intensity": 0.03,
+      "iterations": 500,
+      "learning_rate": 0.01,
+      "perceptual_weight": 1.5,
+      "alpha_multiplier": 2.5
+    },
+    "presets": {
+      "subtle": {
+        "intensity": 0.02,
+        "iterations": 600,
+        "perceptual_weight": 2.0,
+        "description": "Maximum invisibility, slower but more effective"
+      },
+      "balanced": {
+        "intensity": 0.03,
+        "iterations": 500,
+        "perceptual_weight": 1.5,
+        "description": "Balance between invisibility and speed"
+      },
+      "strong": {
+        "intensity": 0.04,
+        "iterations": 400,
+        "perceptual_weight": 1.0,
+        "description": "Stronger poisoning, slightly more visible"
+      }
+    }
+  }
+}
