@@ -42,25 +42,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: macos-14
+          - platform: macos-latest
             args: --target aarch64-apple-darwin
-            arch: aarch64
 
-          - platform: macos-15
+          - platform: macos-latest
             args: --target x86_64-apple-darwin
-            arch: x86_64
+
+          - platform: ubuntu-22.04
+            args: ""
+
+          - platform: ubuntu-22.04-arm
+            args: ""
 
           - platform: windows-latest
             args: ""
-            arch: x86_64
-
-          - platform: ubuntu-24.04
-            args: ""
-            arch: amd64
-
-          - platform: ubuntu-24.04-arm
-            args: ""
-            arch: arm64
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -82,10 +77,10 @@ jobs:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-22.04'
+        if: startsWith(matrix.platform, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
 
       - name: Install frontend dependencies
         run: pnpm install
@@ -100,3 +95,45 @@ jobs:
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
+
+  upload-models:
+    needs: publish-tauri
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout with LFS
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Pull LFS objects
+        run: git lfs pull
+
+      - name: Read version from tauri.conf.json
+        id: version
+        run: |
+          TAG="hope-v$(jq -r '.version' src-tauri/tauri.conf.json)"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Validate ONNX files are real binaries
+        run: |
+          count=$(find src-models/models -name '*.onnx' -type f | wc -l)
+          if [ "$count" -eq 0 ]; then
+            echo "::error::No .onnx files found in src-models/models/"
+            exit 1
+          fi
+          for f in src-models/models/*.onnx; do
+            if head -c 40 "$f" | grep -q "version https://git-lfs"; then
+              echo "::error::$f is an LFS pointer, not a real binary. Run 'git lfs push --all origin' locally first."
+              exit 1
+            fi
+          done
+          echo "Found $count ONNX model(s):"
+          ls -lh src-models/models/*.onnx
+
+      - name: Upload models to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ steps.version.outputs.tag }}" src-models/models/*.onnx --clobber
