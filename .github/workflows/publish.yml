@@ -1,0 +1,94 @@
+name: publish
+
+on:
+  push:
+    branches:
+      - release
+
+jobs:
+  release-notes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      body: ${{ steps.notes.outputs.body }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          PREV_TAG=$(git tag --sort=-v:refname --list 'hope-v*' | head -n 1)
+          if [ -z "$PREV_TAG" ]; then
+            RANGE=""
+          else
+            RANGE="${PREV_TAG}..HEAD"
+          fi
+          ISSUES=$(git log $RANGE --oneline | grep -oiP '(fix(es|ed)?|close[sd]?|resolve[sd]?)\s+#\K\d+' | sort -un | sed 's/^/#/' | paste -sd ', ' -)
+          if [ -z "$ISSUES" ]; then
+            BODY="Maintenance release."
+          else
+            BODY="Fixes: ${ISSUES}"
+          fi
+          echo "body=$BODY" >> "$GITHUB_OUTPUT"
+
+  publish-tauri:
+    needs: release-notes
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            args: --target aarch64-apple-darwin
+
+          - platform: macos-latest
+            args: --target x86_64-apple-darwin
+
+          - platform: ubuntu-22.04
+            args: ""
+
+          - platform: windows-latest
+            args: ""
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      - uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: hope-v__VERSION__
+          releaseName: HopeAD v__VERSION__
+          releaseBody: ${{ needs.release-notes.outputs.body }}
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}
