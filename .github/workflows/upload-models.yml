@@ -1,13 +1,15 @@
-name: Upload Model Binaries
+name: upload models
 
 on:
-  workflow_dispatch:
+  release:
+    types: [published]
 
 permissions:
   contents: write
 
 jobs:
   upload:
+    if: startsWith(github.event.release.tag_name, 'hope-v')
     runs-on: ubuntu-latest
 
     steps:
@@ -35,19 +37,7 @@ jobs:
           echo "Found $count ONNX model(s):"
           ls -lh src-models/models/*.onnx
 
-      - name: Delete existing release if present
+      - name: Upload models to release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release delete models-latest --yes --cleanup-tag 2>/dev/null || true
-
-      - name: Create release and upload models
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release create models-latest \
-            --title "Model Binaries" \
-            --notes "ONNX model binaries for Hope-RE.
-
-          Updated on $(date -u +'%Y-%m-%d %H:%M UTC')." \
-            --latest=false \
-            src-models/models/*.onnx
+        run: gh release upload "${{ github.event.release.tag_name }}" src-models/models/*.onnx --clobber
