@@ -125,7 +125,7 @@ jobs:
       - name: Read version from tauri.conf.json
         id: version
         run: |
-          TAG="hope-v$(jq -r '.version' src-tauri/tauri.conf.json)"
+          TAG="$(jq -r '.version' src-tauri/tauri.conf.json)"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Validate ONNX files are real binaries
