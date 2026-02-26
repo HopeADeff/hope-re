@@ -7,7 +7,6 @@ on:
 
 jobs:
   publish-tauri:
-    needs: release-notes
     permissions:
       contents: write
     strategy:
