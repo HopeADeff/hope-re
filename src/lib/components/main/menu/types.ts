@@ -9,9 +9,8 @@ export type ProtectionProgressProps = {
 // Protection Menu types
 export type ProtectionMenuProps = Omit<ProtectionProgressProps, "message"> & {
   algorithm?: "noise" | "glaze" | "nightshade";
-  targetStyle?: "abstract" | "impressionist" | "cubist" | "sketch" | "watercolor";
-  targetDescription?: string;
-  inputPrompt?: string;
+  glazeStyle?: "abstract" | "impressionist" | "cubist" | "sketch" | "watercolor";
+  nightshadeTarget?: "dog" | "cat" | "car" | "landscape" | "person" | "building" | "food" | "abstract";
   intensity?: number[];
   outputQuality?: number[];
   renderQuality?: number[];
@@ -23,8 +22,12 @@ export type AlgorithmSelectProps = {
   value?: ProtectionMenuProps["algorithm"];
 };
 
-export type InputPromptProps = {
-  value?: ProtectionMenuProps["inputPrompt"];
+export type GlazeStyleSelectProps = {
+  value?: ProtectionMenuProps["glazeStyle"];
+};
+
+export type NightshadeTargetSelectProps = {
+  value?: ProtectionMenuProps["nightshadeTarget"];
 };
 
 export type IntensitySliderProps = {
@@ -37,12 +40,4 @@ export type OutputQualitySliderProps = {
 
 export type RenderQualitySliderProps = {
   value?: ProtectionMenuProps["renderQuality"];
-};
-
-export type TargetDescriptionInputProps = {
-  value?: ProtectionMenuProps["targetDescription"];
-};
-
-export type TargetStyleSelectProps = {
-  value?: ProtectionMenuProps["targetStyle"];
 };

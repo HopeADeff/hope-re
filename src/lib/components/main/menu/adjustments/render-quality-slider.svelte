@@ -14,36 +14,20 @@
   const currentPreset = $derived(
     qualityPresets.find(p => p.value === value[0]) || qualityPresets[2],
   );
-
-  const badgeVariant = $derived(
-    value[0] <= 25
-      ? "default"
-      : value[0] === 50
-      ? "secondary"
-      : "default",
-  );
-
-  const badgeColourClass = $derived(
-    value[0] === 75
-      ? "bg-orange-500"
-      : value[0] === 25
-      ? "bg-red-500"
-      : "",
-  );
 </script>
 
 <div class="space-y-3">
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-2">
-      <div class="p-1.5 rounded-lg bg-blue-500/10">
-        <ClockIcon class="size-4 text-blue-500" />
+      <div class="p-1.5 rounded-lg bg-sky-500/10">
+        <ClockIcon class="size-4 text-sky-600 dark:text-sky-400" />
       </div>
-      <label for={sliderId} class="text-sm font-semibold">Render Quality</label>
+      <label for={sliderId} class="text-sm font-medium">Render Quality</label>
     </div>
-    <Badge variant={badgeVariant} class={cn("gap-1.5", badgeColourClass)}>
+    <Badge variant="secondary" class="gap-1.5">
       {@const Icon = currentPreset.icon}
       <Icon class="size-3" />
-      <span class="text-xs font-semibold">{currentPreset.label}</span>
+      <span class="text-xs font-medium">{currentPreset.label}</span>
     </Badge>
   </div>
 
@@ -64,9 +48,9 @@
         {@const Icon = preset.icon}
         <button type="button"
                 class={cn(
-                  "flex flex-col items-center gap-1 text-xs transition-all hover:scale-105",
+                  "flex flex-col items-center gap-1 text-xs transition-opacity",
                   (value[0] === preset.value) && "opacity-100",
-                  (value[0] !== preset.value) && "opacity-50",
+                  (value[0] !== preset.value) && "opacity-40",
                 )}
                 onclick={() => value = [preset.value]}>
           <Icon class={cn("size-3.5", preset.colour)} />
@@ -81,15 +65,15 @@
     </div>
   </div>
 
-  <div class="p-3 rounded-lg bg-linear-to-br from-muted/50 to-muted/30 border">
+  <div class="p-3 rounded-lg bg-muted/50 border">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
         <currentPreset.icon class={cn("size-4", currentPreset.colour)} />
-        <span class={cn("text-sm font-semibold", currentPreset.colour)}>
+        <span class={cn("text-sm font-medium", currentPreset.colour)}>
           {currentPreset.label}
         </span>
       </div>
-      <span class="text-sm font-medium text-muted-foreground">
+      <span class="text-sm text-muted-foreground">
         {currentPreset.time}
       </span>
     </div>

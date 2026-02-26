@@ -28,9 +28,8 @@
   let progressMessage = $state<string>("");
 
   let algorithm = $state<ProtectionMenuProps["algorithm"]>("noise");
-  let targetStyle = $state<ProtectionMenuProps["targetStyle"]>("abstract");
-  let targetDescription = $state("");
-  let inputPrompt = $state("");
+  let glazeStyle = $state<ProtectionMenuProps["glazeStyle"]>("abstract");
+  let nightshadeTarget = $state<ProtectionMenuProps["nightshadeTarget"]>("dog");
   let intensity = $state([20]);
   let outputQuality = $state([92]);
   let renderQuality = $state([50]);
@@ -49,19 +48,10 @@
     return () => mediaQuery.removeEventListener("change", handler);
   });
 
-  function handleFileSelect(files: FileList) {
+  async function handleUpload(files: File[]) {
     const file = files[0];
-
-    if (!file || !file.type.startsWith("image/")) {
-      toast.error("Please select a valid image file");
+    if (!file)
       return;
-    }
-
-    const maxSize = 10 * 1024 * 1024;
-    if (file.size > maxSize) {
-      toast.error("File size must be less than 10MB");
-      return;
-    }
 
     const reader = new FileReader();
 
@@ -91,11 +81,9 @@
 
     switch (algorithm) {
       case "glaze":
-        return { ...baseSettings, targetStyle };
-      case "noise":
-        return { ...baseSettings, targetDescription };
+        return { ...baseSettings, glazeStyle };
       case "nightshade":
-        return { ...baseSettings, inputPrompt };
+        return { ...baseSettings, nightshadeTarget };
       default:
         return baseSettings;
     }
@@ -104,16 +92,6 @@
   async function handleProtect() {
     if (!originalImage)
       return;
-
-    if (algorithm === "noise" && !targetDescription.trim()) {
-      toast.error("Please enter a target description");
-      return;
-    }
-
-    if (algorithm === "nightshade" && !inputPrompt.trim()) {
-      toast.error("Please enter an input prompt");
-      return;
-    }
 
     isProcessing = true;
     progress = 0;
@@ -202,10 +180,9 @@
     progressStatus = "idle";
     progressMessage = "";
 
-    algorithm = "glaze";
-    targetStyle = "abstract";
-    targetDescription = "";
-    inputPrompt = "";
+    algorithm = "noise";
+    glazeStyle = "abstract";
+    nightshadeTarget = "dog";
     intensity = [20];
     outputQuality = [92];
     renderQuality = [50];
@@ -262,14 +239,14 @@
           {:else}
             <BaseImagePlaceholder imageSrc={originalImage}
                                   label="Original Image"
-                                  onFileSelect={handleFileSelect} />
+                                  onUpload={handleUpload} />
           {/if}
         </div>
       {:else}
         <div class="grid grid-cols-2 gap-6 flex-1">
           <BaseImagePlaceholder imageSrc={originalImage}
                                 label="Original Image"
-                                onFileSelect={handleFileSelect} />
+                                onUpload={handleUpload} />
 
           <BaseImagePlaceholder imageSrc={renderedImage}
                                 label="Protected Image"
@@ -283,9 +260,8 @@
       {/if}
 
       <ProtectionMenu bind:algorithm
-                      bind:targetStyle
-                      bind:targetDescription
-                      bind:inputPrompt
+                      bind:glazeStyle
+                      bind:nightshadeTarget
                       bind:intensity
                       bind:outputQuality
                       bind:renderQuality
@@ -297,28 +273,28 @@
       <div class="grid grid-cols-2 gap-4 pb-4">
         <Button
           size="lg"
-          class="gap-2 h-14 bg-linear-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          class="gap-2 h-14 bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           onclick={handleProtect}
           disabled={!canProcess}
         >
           {#if isProcessing}
             <LoaderCircleIcon class="size-5 animate-spin" />
-            <span class="font-semibold">Processing...</span>
+            <span class="font-medium">Processing...</span>
           {:else}
             <ShieldIcon class="size-5" />
-            <span class="font-semibold">Protect Image</span>
+            <span class="font-medium">Protect Image</span>
           {/if}
         </Button>
 
         <Button
           variant="outline"
           size="lg"
-          class="gap-2 h-14 border-2 hover:bg-destructive/10 hover:border-destructive/50 hover:text-destructive transition-all duration-200 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          class="gap-2 h-14 border hover:bg-destructive/10 hover:border-destructive/30 hover:text-destructive transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           onclick={handleCancel}
           disabled={!hasImage}
         >
           <XIcon class="size-5" />
-          <span class="font-semibold">Cancel</span>
+          <span class="font-medium">Cancel</span>
         </Button>
       </div>
     </div>

@@ -1,26 +1,23 @@
 <script lang="ts">
-  import { Settings2Icon, SparklesIcon } from "@lucide/svelte";
-  import { Badge } from "$lib/components/ui/badge";
+  import { Settings2Icon } from "@lucide/svelte";
   import { Separator } from "$lib/components/ui/separator";
 
   import type { ProtectionMenuProps } from "./types";
 
   import {
     AlgorithmSelect,
-    InputPrompt,
+    GlazeStyleSelect,
     IntensitySlider,
+    NightshadeTargetSelect,
     OutputQualitySlider,
     RenderQualitySlider,
-    TargetDescriptionInput,
-    TargetStyleSelect,
   } from "./adjustments";
   import { ProtectionProgress } from "./protection-progress";
 
   let {
     algorithm = $bindable("noise"),
-    targetStyle = $bindable("abstract"),
-    targetDescription = $bindable(""),
-    inputPrompt = $bindable(""),
+    glazeStyle = $bindable("abstract"),
+    nightshadeTarget = $bindable("dog"),
     intensity = $bindable([20]),
     outputQuality = $bindable([92]),
     renderQuality = $bindable([50]),
@@ -30,51 +27,42 @@
     progressMessage = "",
   }: ProtectionMenuProps = $props();
 
-  const showTargetStyle = $derived(algorithm === "glaze");
-  const showTargetDescription = $derived(algorithm === "noise");
-  const showInputPrompt = $derived(algorithm === "nightshade");
+  const showGlazeStyle = $derived(algorithm === "glaze");
+  const showNightshadeTarget = $derived(algorithm === "nightshade");
 </script>
 
 <div class="space-y-6">
-  <div class="space-y-6 p-6 border rounded-xl bg-linear-to-br from-card via-card to-card/80 shadow-lg">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="p-2 rounded-lg bg-linear-to-br from-primary/10 to-primary/5">
-          <Settings2Icon class="size-5 text-primary" />
-        </div>
-        <h3 class="text-base font-bold">Protection Settings</h3>
+  <div class="space-y-6 p-6 border rounded-xl bg-card">
+    <div class="flex items-center gap-3">
+      <div class="p-2 rounded-lg bg-primary/10">
+        <Settings2Icon class="size-5 text-primary" />
       </div>
-      <Badge variant="outline" class="gap-1.5 shadow-sm">
-        <SparklesIcon class="size-3" />
-        <span class="text-xs font-semibold">Advanced</span>
-      </Badge>
+      <h3 class="text-base font-medium">Protection Settings</h3>
     </div>
 
-    <Separator class="bg-linear-to-r from-transparent via-border to-transparent" />
+    <Separator />
 
     <AlgorithmSelect bind:value={algorithm} />
 
-    <Separator class="bg-linear-to-r from-transparent via-border to-transparent" />
+    <Separator />
 
-    {#if showTargetStyle}
+    {#if showGlazeStyle}
       <div class="animate-in fade-in slide-in-from-top-2 duration-300">
-        <TargetStyleSelect bind:value={targetStyle} />
+        <GlazeStyleSelect bind:value={glazeStyle} />
       </div>
-    {:else if showTargetDescription}
+    {:else if showNightshadeTarget}
       <div class="animate-in fade-in slide-in-from-top-2 duration-300">
-        <TargetDescriptionInput bind:value={targetDescription} />
-      </div>
-    {:else if showInputPrompt}
-      <div class="animate-in fade-in slide-in-from-top-2 duration-300">
-        <InputPrompt bind:value={inputPrompt} />
+        <NightshadeTargetSelect bind:value={nightshadeTarget} />
       </div>
     {/if}
 
-    <Separator class="bg-linear-to-r from-transparent via-border to-transparent" />
+    {#if showGlazeStyle || showNightshadeTarget}
+      <Separator />
+    {/if}
 
     <IntensitySlider bind:value={intensity} />
 
-    <Separator class="bg-linear-to-r from-transparent via-border to-transparent" />
+    <Separator />
 
     <OutputQualitySlider bind:value={outputQuality} />
 

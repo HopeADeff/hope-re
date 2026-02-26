@@ -25,15 +25,8 @@
         class="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:bg-muted/50 hover:cursor-pointer transition-colors"
         aria-label="Toggle theme">
   {#if isDark}
-    <SunIcon class="size-4 transition-all duration-300 rotate-0 hover:rotate-90" />
+    <SunIcon class="size-4 transition-transform duration-300 rotate-0 hover:rotate-90" />
   {:else}
-    <MoonIcon class="size-4 transition-all duration-300 rotate-0 hover:-rotate-12" />
+    <MoonIcon class="size-4 transition-transform duration-300 rotate-0 hover:-rotate-12" />
   {/if}
 </Button>
-
-<!-- svelte-ignore css_unused_selector -->
-<style>
-  :global(.dark) button :global(svg) {
-    filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5));
-  }
-</style>
