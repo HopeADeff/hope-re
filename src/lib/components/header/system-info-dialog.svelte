@@ -75,7 +75,7 @@
           <div class="rounded-lg border bg-card p-6 space-y-4">
             <div class="pb-4 border-b">
               <div class="flex items-center gap-2 mb-2">
-                <GlobeIcon class="size-4 text-muted-foreground" />
+                <GlobeIcon class="size-4 text-sky-600 dark:text-sky-400" />
                 <p class="text-xs font-medium text-muted-foreground">Platform</p>
               </div>
               <p class="text-sm font-semibold pl-6">{info.platform.os}</p>
@@ -84,7 +84,7 @@
 
             <div class="space-y-3.5">
               <div class="flex items-start gap-3">
-                <CpuIcon class="size-4 text-blue-500 shrink-0 mt-0.5" />
+                <CpuIcon class="size-4 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
                 <div class="flex-1 min-w-0">
                   <p class="text-sm">
                     <span class="font-medium text-muted-foreground">CPU: </span>
@@ -94,7 +94,7 @@
               </div>
 
               <div class="flex items-start gap-3">
-                <MemoryStickIcon class="size-4 text-purple-500 shrink-0 mt-0.5" />
+                <MemoryStickIcon class="size-4 text-violet-600 dark:text-violet-400 shrink-0 mt-0.5" />
                 <div class="flex-1 min-w-0">
                   <p class="text-sm">
                     <span class="font-medium text-muted-foreground">Memory:</span>
@@ -104,7 +104,7 @@
               </div>
 
               <div class="flex items-start gap-3">
-                <ZapIcon class="size-4 text-emerald-500 shrink-0 mt-0.5" />
+                <ZapIcon class="size-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                 <div class="flex-1 min-w-0">
                   <p class="text-sm">
                     <span class="font-medium text-muted-foreground">GPU: </span>
@@ -114,7 +114,7 @@
               </div>
 
               <div class="flex items-start gap-3">
-                <HardDriveIcon class="size-4 text-orange-500 shrink-0 mt-0.5" />
+                <HardDriveIcon class="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                 <div class="flex-1 min-w-0">
                   <p class="text-sm">
                     <span class="font-medium text-muted-foreground">Storage:</span>

@@ -22,11 +22,11 @@
     <div class={cn("p-1.5 rounded-lg", currentAlgo.bgColour)}>
       <PaletteIcon class={cn("size-4", currentAlgo.colour)} />
     </div>
-    <span class="text-sm font-semibold">Algorithm</span>
+    <span class="text-sm font-medium">Algorithm</span>
   </div>
 
   <Select.Root type="single" bind:value>
-    <Select.Trigger class="w-full hover:border-primary/30 transition-colors" aria-label="Algorithm Selection">
+    <Select.Trigger class="w-full hover:border-foreground/20 transition-colors" aria-label="Algorithm Selection">
       {triggerContent}
     </Select.Trigger>
     <Select.Content>

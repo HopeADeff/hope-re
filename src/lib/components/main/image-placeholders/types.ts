@@ -1,11 +1,9 @@
 import type { Snippet } from "svelte";
 
 export type BaseImagePlaceholderProps = {
-  files?: FileList | null;
-  elementRef?: HTMLInputElement;
   imageSrc?: string | null;
   label: string;
-  onFileSelect?: (file: FileList) => void;
+  onUpload?: (files: File[]) => Promise<void>;
   readonly?: boolean;
   children?: Snippet | null;
 };
