@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [2.0.3] - 2026-02-26
 
+### Bug Fixes
+
+- Fix publish.yml workflow and styling corrections
+- Update npm packages to latest versions ([#50](https://github.com/HopeArtOrg/hope-re/pull/50))
+
 ### Changed
 
 - Bump version from 2.0.2-alpha to 2.0.3 stable release across package.json, Cargo.toml, and tauri.conf.json
