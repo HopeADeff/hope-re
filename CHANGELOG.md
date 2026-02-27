@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.42] - 2026-02-28
+
+### Bug Fixes
+
+- Drop `x86_64-apple-darwin` (Intel Mac) build target since `ort-sys@2.0.0-rc.11` no longer provides prebuilt ONNX Runtime binaries for that platform
+
 ## [2.0.41] - 2026-02-28
 
 ### Bug Fixes
