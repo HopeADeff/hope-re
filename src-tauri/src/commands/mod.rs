@@ -1,7 +1,7 @@
 pub mod system_info;
 
+pub use self::system_info::get_system_info;
 pub use crate::system_info::get_platform_info;
-pub use system_info::get_system_info;
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct ExecutionProviderInfo {
