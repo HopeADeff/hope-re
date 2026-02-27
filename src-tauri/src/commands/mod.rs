@@ -1,5 +1,6 @@
 pub mod system_info;
 
+pub use crate::system_info::get_platform_info;
 pub use system_info::get_system_info;
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -13,38 +14,6 @@ pub struct ExecutionProviderInfo {
 pub struct InferenceCapabilities {
     pub providers: Vec<ExecutionProviderInfo>,
     pub platform: String,
-}
-
-fn get_platform_name() -> String {
-    #[cfg(target_os = "windows")]
-    return "Windows x64".to_string();
-
-    #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
-    return "macOS x64".to_string();
-
-    #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-    return "macOS ARM64".to_string();
-
-    #[cfg(target_os = "ios")]
-    return "iOS".to_string();
-
-    #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
-    return "Linux x64".to_string();
-
-    #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
-    return "Linux ARM64".to_string();
-
-    #[cfg(target_os = "android")]
-    return "Android".to_string();
-
-    #[cfg(not(any(
-        target_os = "windows",
-        target_os = "macos",
-        target_os = "ios",
-        target_os = "linux",
-        target_os = "android"
-    )))]
-    return "Unknown".to_string();
 }
 
 #[cfg(target_os = "windows")]
@@ -139,7 +108,8 @@ fn build_execution_providers() -> Vec<ort::ep::ExecutionProviderDispatch> {
 }
 
 fn get_inference_capabilities_internal() -> InferenceCapabilities {
-    let platform = get_platform_name();
+    let platform_info = get_platform_info();
+    let platform = format!("{} {}", platform_info.os, platform_info.arch);
     let mut providers = Vec::new();
 
     #[cfg(target_os = "windows")]

@@ -4,12 +4,14 @@ use sysinfo::System;
 #[derive(Debug, Clone, Serialize)]
 pub struct PlatformInfo {
     pub os: String,
+    pub arch: String,
     pub hostname: String,
 }
 
 pub fn get_platform_info() -> PlatformInfo {
     PlatformInfo {
         os: format_os_info(),
+        arch: get_arch(),
         hostname: System::host_name().unwrap_or_else(|| "Unknown".to_string()),
     }
 }
@@ -47,6 +49,28 @@ fn get_os_type() -> String {
         target_os = "linux",
         target_os = "ios",
         target_os = "android"
+    )))]
+    return "Unknown".to_string();
+}
+
+fn get_arch() -> String {
+    #[cfg(target_arch = "x86_64")]
+    return "x64".to_string();
+
+    #[cfg(target_arch = "aarch64")]
+    return "ARM64".to_string();
+
+    #[cfg(target_arch = "x86")]
+    return "x86".to_string();
+
+    #[cfg(target_arch = "arm")]
+    return "ARM".to_string();
+
+    #[cfg(not(any(
+        target_arch = "x86_64",
+        target_arch = "aarch64",
+        target_arch = "x86",
+        target_arch = "arm"
     )))]
     return "Unknown".to_string();
 }
