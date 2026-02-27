@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.4] - 2026-02-27
+
+### Changed
+
+- Update primary font from Montserrat to Be Vietnam Pro for cleaner Zen-like aesthetic
+- Add JetBrains Mono Variable font for numeric displays (intensity, output quality, progress)
+- Update foreground color to charcoal black (#2D2D2D / oklch(0.18 0 95)) for light mode with dark mode responsiveness
+
+### Bug Fixes
+
+- Fix badge border-radius from rounded-full to rounded-lg for consistent Zen aesthetic
+- Fix image placeholder icon containers border-radius (rounded-2xl to rounded-lg) and spacing
+
 ## [2.0.3] - 2026-02-26
 
 ### Bug Fixes
@@ -73,6 +86,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.0.4]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.2-alpha...v2.0.3
 [2.0.2-alpha]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.1-alpha...v2.0.2-alpha
 [2.0.1-alpha]: https://github.com/HopeArtOrg/hope-re/commits/v2.0.1-alpha
