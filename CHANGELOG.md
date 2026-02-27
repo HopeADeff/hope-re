@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.41] - 2026-02-28
+
+### Bug Fixes
+
+- Fix CoreML `with_subgraphs()` call to pass explicit `bool` argument required by ort v2.0.0-rc.11 API, fixing macOS and iOS builds
+- Replace `native-tls` with `rustls` across all TLS-dependent crates to fix Android cross-compilation failing on missing OpenSSL
+- Fix Android build failing with `ort-sys` unable to find prebuilt ONNX Runtime binaries for `x86_64-linux-android` with CUDA feature set
+- Fix Android build failing for x86/x86_64 emulator targets where no ONNX Runtime prebuilt binaries exist
+
+### Changed
+
+- Switch `reqwest` from default features to explicit feature set with `rustls-tls` instead of `default-tls`
+- Switch `ort` TLS feature from `tls-native` to `tls-rustls` for pure-Rust TLS support
+- Split `ort` execution provider features into platform-conditional dependencies (CUDA + DirectML on Windows, CUDA + XNNPACK on Linux, CoreML on macOS/iOS, XNNPACK on Android)
+- Restrict Android build targets to `aarch64` (ARM64) only, since ONNX Runtime has no prebuilt binaries for x86/x86_64 Android
+
 ## [2.0.4] - 2026-02-27
 
 ### Features
@@ -128,6 +144,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.0.41]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.4...v2.0.41
 [2.0.4]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.2-alpha...v2.0.3
 [2.0.2-alpha]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.1-alpha...v2.0.2-alpha
