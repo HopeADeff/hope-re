@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Update primary font from Montserrat to Be Vietnam Pro for cleaner Zen-like aesthetic
 - Add JetBrains Mono Variable font for numeric displays (intensity, output quality, progress)
 - Update foreground color to charcoal black (#2D2D2D / oklch(0.18 0 95)) for light mode with dark mode responsiveness
+- Add platform-specific ONNX Runtime execution providers (ort crate):
+  - Windows x64: CUDA + DirectML
+  - macOS x64/ARM64: CoreML
+  - iOS: CoreML
+  - Linux x64/ARM64: CUDA + XNNPACK
+  - Android: XNNPACK
 
 ### Bug Fixes
 
