@@ -1,8 +1,8 @@
 mod commands;
+mod onnx_integration;
 mod system_info;
 
-use commands::get_system_info;
-use commands::{create_ort_session, get_inference_capabilities};
+use commands::{create_ort_session, get_inference_capabilities, get_system_info};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
