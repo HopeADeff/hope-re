@@ -10,11 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Fix CoreML `with_subgraphs()` call to pass explicit `bool` argument required by ort v2.0.0-rc.11 API, fixing macOS and iOS builds
 - Replace `native-tls` with `rustls` across all TLS-dependent crates to fix Android cross-compilation failing on missing OpenSSL
+- Fix Android build failing with `ort-sys` unable to find prebuilt ONNX Runtime binaries for `x86_64-linux-android` with CUDA feature set
+- Fix Android build failing for x86/x86_64 emulator targets where no ONNX Runtime prebuilt binaries exist
 
 ### Changed
 
 - Switch `reqwest` from default features to explicit feature set with `rustls-tls` instead of `default-tls`
 - Switch `ort` TLS feature from `tls-native` to `tls-rustls` for pure-Rust TLS support
+- Split `ort` execution provider features into platform-conditional dependencies (CUDA + DirectML on Windows, CUDA + XNNPACK on Linux, CoreML on macOS/iOS, XNNPACK on Android)
+- Restrict Android build targets to `aarch64` (ARM64) only, since ONNX Runtime has no prebuilt binaries for x86/x86_64 Android
 
 ## [2.0.4] - 2026-02-27
 

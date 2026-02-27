@@ -49,15 +49,27 @@ ort = { version = "2.0.0-rc.9", default-features = false, features = [
   "ndarray",
   "copy-dylibs",
   "download-binaries",
-  "tls-rustls",
-  "cuda",
-  "directml",
-  "coreml",
-  "xnnpack"
+  "tls-rustls"
 ] }
 
 [target.'cfg(windows)'.dependencies]
+ort = { version = "2.0.0-rc.9", default-features = false, features = [
+  "cuda",
+  "directml"
+] }
 windows = { version = "0.61.3", features = [
   "Win32_Graphics_Dxgi",
   "Win32_System_Com"
 ] }
+
+[target.'cfg(any(target_os = "linux"))'.dependencies]
+ort = { version = "2.0.0-rc.9", default-features = false, features = [
+  "cuda",
+  "xnnpack"
+] }
+
+[target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
+ort = { version = "2.0.0-rc.9", default-features = false, features = [ "coreml" ] }
+
+[target.'cfg(target_os = "android")'.dependencies]
+ort = { version = "2.0.0-rc.9", default-features = false, features = [ "xnnpack" ] }
