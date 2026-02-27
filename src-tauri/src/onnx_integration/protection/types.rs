@@ -1,0 +1,31 @@
+use ndarray::Array4;
+use ort::session::Session;
+
+pub const TILE_SIZE: u32 = 224;
+pub const TILE_OVERLAP: u32 = 16;
+pub const SPSA_DIRECTIONS_PER_ITER: usize = 8;
+
+pub type ModelRunFn = dyn FnMut(&mut Session, &Array4<f32>) -> Result<f32, String>;
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ProtectionSettings {
+    pub algorithm: String,
+    pub intensity: f32,
+    pub output_quality: u8,
+    pub render_quality: u8,
+    pub glaze_style: Option<String>,
+    pub nightshade_target: Option<String>,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct ProtectionResult {
+    pub image_base64: String,
+    pub success: bool,
+    pub message: String,
+}
+
+pub struct AlgorithmParams {
+    pub epsilon: f32,
+    pub max_iterations: u32,
+    pub alpha_multiplier: f32,
+}

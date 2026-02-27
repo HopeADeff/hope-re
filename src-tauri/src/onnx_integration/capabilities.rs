@@ -3,8 +3,6 @@ use crate::system_info::get_platform_info;
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct ExecutionProviderInfo {
     pub name: String,
-    pub available: bool,
-    pub registered: bool,
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -113,46 +111,50 @@ fn get_inference_capabilities_internal() -> InferenceCapabilities {
     {
         use ort::ep::{DirectML, ExecutionProvider, CUDA};
 
-        providers.push(ExecutionProviderInfo {
-            name: "CUDA".to_string(),
-            available: CUDA::default().is_available().unwrap_or(false),
-            registered: false,
-        });
+        if CUDA::default().is_available().unwrap_or(false) {
+            providers.push(ExecutionProviderInfo {
+                name: "CUDA".to_string(),
+            });
+        }
 
-        providers.push(ExecutionProviderInfo {
-            name: "DirectML".to_string(),
-            available: DirectML::default().is_available().unwrap_or(false),
-            registered: false,
-        });
+        if DirectML::default().is_available().unwrap_or(false) {
+            providers.push(ExecutionProviderInfo {
+                name: "DirectML".to_string(),
+            });
+        }
     }
 
     #[cfg(any(target_os = "macos", target_os = "ios"))]
     {
         use ort::ep::{CoreML, ExecutionProvider};
 
-        providers.push(ExecutionProviderInfo {
-            name: "CoreML".to_string(),
-            available: CoreML::default().is_available().unwrap_or(false),
-            registered: false,
-        });
+        if CoreML::default().is_available().unwrap_or(false) {
+            providers.push(ExecutionProviderInfo {
+                name: "CoreML".to_string(),
+            });
+        }
     }
 
     #[cfg(any(target_os = "linux", target_os = "android"))]
     {
         use ort::ep::{ExecutionProvider, CUDA, XNNPACK};
 
-        providers.push(ExecutionProviderInfo {
-            name: "CUDA".to_string(),
-            available: CUDA::default().is_available().unwrap_or(false),
-            registered: false,
-        });
+        if CUDA::default().is_available().unwrap_or(false) {
+            providers.push(ExecutionProviderInfo {
+                name: "CUDA".to_string(),
+            });
+        }
 
-        providers.push(ExecutionProviderInfo {
-            name: "XNNPACK".to_string(),
-            available: XNNPACK::default().is_available().unwrap_or(false),
-            registered: false,
-        });
+        if XNNPACK::default().is_available().unwrap_or(false) {
+            providers.push(ExecutionProviderInfo {
+                name: "XNNPACK".to_string(),
+            });
+        }
     }
+
+    providers.push(ExecutionProviderInfo {
+        name: "CPU".to_string(),
+    });
 
     InferenceCapabilities {
         providers,

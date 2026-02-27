@@ -37,7 +37,23 @@ fn detect_gpu() -> GpuDetails {
         detect_gpu_linux()
     }
 
-    #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
+    #[cfg(target_os = "ios")]
+    {
+        detect_gpu_ios()
+    }
+
+    #[cfg(target_os = "android")]
+    {
+        detect_gpu_android()
+    }
+
+    #[cfg(not(any(
+        target_os = "windows",
+        target_os = "macos",
+        target_os = "linux",
+        target_os = "ios",
+        target_os = "android"
+    )))]
     {
         GpuDetails {
             name: "N/A".to_string(),
@@ -218,6 +234,36 @@ fn detect_gpu_linux() -> GpuDetails {
 
     GpuDetails {
         name: "N/A".to_string(),
+        vram_mb: None,
+    }
+}
+
+#[cfg(target_os = "ios")]
+fn detect_gpu_ios() -> GpuDetails {
+    GpuDetails {
+        name: "Apple GPU (Metal)".to_string(),
+        vram_mb: None,
+    }
+}
+
+#[cfg(target_os = "android")]
+fn detect_gpu_android() -> GpuDetails {
+    use std::process::Command;
+
+    let output = Command::new("getprop").args(["ro.hardware"]).output();
+
+    if let Ok(output) = output {
+        let hardware = String::from_utf8_lossy(&output.stdout).trim().to_string();
+        if !hardware.is_empty() {
+            return GpuDetails {
+                name: format!("{} GPU", hardware),
+                vram_mb: None,
+            };
+        }
+    }
+
+    GpuDetails {
+        name: "Mobile GPU".to_string(),
         vram_mb: None,
     }
 }

@@ -33,8 +33,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": [
-      "../src-models/models/*.onnx"
-    ]
+    "resources": []
   }
 }

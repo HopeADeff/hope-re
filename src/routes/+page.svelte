@@ -1,9 +1,4 @@
 <script lang="ts">
-  import type {
-    ProtectionMenuProps,
-    ProtectionProgressProps,
-  } from "$lib/components";
-
   import {
     LoaderCircleIcon,
     ShieldIcon,
@@ -16,25 +11,20 @@
     RenderedImageActions,
   } from "$lib/components";
   import { Button } from "$lib/components/ui/button";
+  import { useInferenceCapabilities } from "$lib/queries";
+  import { useImage } from "$lib/stores/use-image.svelte";
+  import { useProtection } from "$lib/stores/use-protection.svelte";
   import { toast } from "svelte-sonner";
 
-  let originalImage = $state<string | null>(null);
-  let renderedImage = $state<string | null>(null);
-  let isProcessing = $state<boolean>(false);
-  let fullscreenOpen = $state<boolean>(false);
-
-  let progress = $state<number>(0);
-  let progressStatus = $state<ProtectionProgressProps["status"]>("idle");
-  let progressMessage = $state<string>("");
-
-  let algorithm = $state<ProtectionMenuProps["algorithm"]>("noise");
-  let glazeStyle = $state<ProtectionMenuProps["glazeStyle"]>("abstract");
-  let nightshadeTarget = $state<ProtectionMenuProps["nightshadeTarget"]>("dog");
-  let intensity = $state([20]);
-  let outputQuality = $state([92]);
-  let renderQuality = $state([50]);
+  const image = useImage();
+  const protection = useProtection();
 
   let isMobile = $state<boolean>(false);
+
+  const {
+    data: inferenceData,
+    isSuccess,
+  } = $derived(useInferenceCapabilities());
 
   $effect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1023px)");
@@ -48,175 +38,30 @@
     return () => mediaQuery.removeEventListener("change", handler);
   });
 
-  async function handleUpload(files: File[]) {
-    const file = files[0];
-    if (!file)
+  function handleProtect() {
+    if (!image.originalImage)
       return;
 
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      originalImage = e.target?.result as string;
-      renderedImage = null;
-      progress = 0;
-      progressStatus = "idle";
-      progressMessage = "";
-      toast.success(`Loaded ${file.name}`);
-    };
-
-    reader.onerror = () => {
-      toast.error("Failed to load image");
-    };
-
-    reader.readAsDataURL(file);
-  }
-
-  function getProtectionSettings() {
-    const baseSettings = {
-      algorithm,
-      intensity: intensity[0] / 100,
-      outputQuality: outputQuality[0],
-      renderQuality: renderQuality[0],
-    };
-
-    switch (algorithm) {
-      case "glaze":
-        return { ...baseSettings, glazeStyle };
-      case "nightshade":
-        return { ...baseSettings, nightshadeTarget };
-      default:
-        return baseSettings;
-    }
-  }
-
-  async function handleProtect() {
-    if (!originalImage)
-      return;
-
-    isProcessing = true;
-    progress = 0;
-    progressStatus = "processing";
-    progressMessage = "Initializing protection...";
-    toast.info("Starting image protection...");
-
-    try {
-      const settings = getProtectionSettings();
-      // eslint-disable-next-line no-console
-      console.log("Protection settings:", settings);
-
-      const progressInterval = setInterval(() => {
-        if (progress < 90) {
-          progress += Math.random() * 10;
-          progress = Math.min(progress, 90);
-
-          if (progress < 20) {
-            progressMessage = "Analyzing image structure...";
-          }
-          else if (progress < 40) {
-            progressMessage = "Preparing protection algorithm...";
-          }
-          else if (progress < 60) {
-            progressMessage = `Applying ${algorithm} protection...`;
-          }
-          else if (progress < 80) {
-            progressMessage = "Processing pixel data...";
-          }
-          else {
-            progressMessage = "Finalizing output...";
-          }
-        }
-      }, 500);
-
-      // TODO: Call Rust backend
-
-      const processingTime = 2000 + (renderQuality[0] * 50);
-      await new Promise(resolve => setTimeout(resolve, processingTime));
-
-      clearInterval(progressInterval);
-      progress = 100;
-      progressMessage = "Protection complete!";
-      progressStatus = "success";
-
-      renderedImage = originalImage;
-
-      toast.success("Image protected successfully!");
-
-      setTimeout(() => {
-        if (progressStatus === "success") {
-          progressStatus = "idle";
-          progress = 0;
-          progressMessage = "";
-        }
-      }, 3000);
-    }
-    catch (error) {
-      progress = 0;
-      progressStatus = "error";
-      progressMessage = "Failed to protect image.  Please try again.";
-      toast.error("Protection failed");
-      console.error("Protection error:", error);
-
-      setTimeout(() => {
-        if (progressStatus === "error") {
-          progressStatus = "idle";
-          progressMessage = "";
-        }
-      }, 5000);
-    }
-    finally {
-      isProcessing = false;
-    }
+    protection.handleProtect(image.originalImage);
   }
 
   function handleCancel() {
-    if (isProcessing) {
+    if (protection.isProcessing) {
       toast.info("Protection cancelled");
     }
 
-    isProcessing = false;
-    originalImage = null;
-    renderedImage = null;
-    progress = 0;
-    progressStatus = "idle";
-    progressMessage = "";
-
-    algorithm = "noise";
-    glazeStyle = "abstract";
-    nightshadeTarget = "dog";
-    intensity = [20];
-    outputQuality = [92];
-    renderQuality = [50];
+    protection.resetProgress();
+    protection.resetSettings();
+    image.clear();
 
     toast.success("All cleared");
   }
 
   function handleDownload() {
-    if (!renderedImage)
-      return;
-
-    try {
-      const link = document.createElement("a");
-      link.href = renderedImage;
-
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, -5);
-      link.download = `protected-${algorithm}-${timestamp}.png`;
-
-      link.click();
-
-      toast.success("Image downloaded successfully");
-    }
-    catch (error) {
-      toast.error("Failed to download image");
-      console.error("Download error:", error);
-    }
+    image.handleDownload(protection.resultImage, protection.algorithm);
   }
 
-  function handleFullscreen() {
-    fullscreenOpen = true;
-  }
-
-  const hasImage = $derived(!!originalImage);
-  const canProcess = $derived(hasImage && !isProcessing);
+  const canProcess = $derived(image.hasImage && !protection.isProcessing);
 </script>
 
 <svelte:head>
@@ -229,46 +74,58 @@
     <div class="flex flex-col gap-6 h-full">
       {#if isMobile}
         <div class="flex flex-col gap-4 flex-1 min-h-0">
-          {#if renderedImage}
-            <BaseImagePlaceholder imageSrc={renderedImage}
+          {#if protection.resultImage}
+            <BaseImagePlaceholder imageSrc={protection.resultImage}
                                   label="Protected Image"
                                   readonly>
               <RenderedImageActions onDownload={handleDownload}
-                                    onFullscreen={handleFullscreen} />
+                                    onFullscreen={image.handleFullscreen} />
             </BaseImagePlaceholder>
           {:else}
-            <BaseImagePlaceholder imageSrc={originalImage}
+            <BaseImagePlaceholder imageSrc={image.originalImage}
                                   label="Original Image"
-                                  onUpload={handleUpload} />
+                                  onUpload={image.handleUpload} />
           {/if}
         </div>
       {:else}
         <div class="grid grid-cols-2 gap-6 flex-1">
-          <BaseImagePlaceholder imageSrc={originalImage}
+          <BaseImagePlaceholder imageSrc={image.originalImage}
                                 label="Original Image"
-                                onUpload={handleUpload} />
+                                onUpload={image.handleUpload} />
 
-          <BaseImagePlaceholder imageSrc={renderedImage}
+          <BaseImagePlaceholder imageSrc={protection.resultImage}
                                 label="Protected Image"
                                 readonly>
-            {#if renderedImage}
+            {#if protection.resultImage}
               <RenderedImageActions onDownload={handleDownload}
-                                    onFullscreen={handleFullscreen} />
+                                    onFullscreen={image.handleFullscreen} />
             {/if}
           </BaseImagePlaceholder>
         </div>
       {/if}
 
-      <ProtectionMenu bind:algorithm
-                      bind:glazeStyle
-                      bind:nightshadeTarget
-                      bind:intensity
-                      bind:outputQuality
-                      bind:renderQuality
-                      {isProcessing}
-                      {progress}
-                      status={progressStatus}
-                      progressMessage={progressMessage} />
+      <ProtectionMenu bind:algorithm={protection.algorithm}
+                      bind:glazeStyle={protection.glazeStyle}
+                      bind:nightshadeTarget={protection.nightshadeTarget}
+                      bind:intensity={protection.intensity}
+                      bind:outputQuality={protection.outputQuality}
+                      bind:renderQuality={protection.renderQuality}
+                      isProcessing={protection.isProcessing}
+                      progress={protection.progress}
+                      status={protection.progressStatus}
+                      progressMessage={protection.progressMessage} />
+
+      {#if isSuccess && inferenceData}
+        <div class="text-xs text-muted-foreground px-2">
+          <span class="font-medium">Inference:</span>
+          {#each inferenceData.providers as provider}
+            <span class="ml-2 inline-flex items-center gap-1">
+              {provider.name}
+              <span class="size-1.5 rounded-full bg-emerald-500"></span>
+            </span>
+          {/each}
+        </div>
+      {/if}
 
       <div class="grid grid-cols-2 gap-4 pb-4">
         <Button
@@ -277,7 +134,7 @@
           onclick={handleProtect}
           disabled={!canProcess}
         >
-          {#if isProcessing}
+          {#if protection.isProcessing}
             <LoaderCircleIcon class="size-5 animate-spin" />
             <span class="font-medium">Processing...</span>
           {:else}
@@ -291,7 +148,7 @@
           size="lg"
           class="gap-2 h-14 border hover:bg-destructive/10 hover:border-destructive/30 hover:text-destructive transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           onclick={handleCancel}
-          disabled={!hasImage}
+          disabled={!image.hasImage}
         >
           <XIcon class="size-5" />
           <span class="font-medium">Cancel</span>
@@ -301,5 +158,5 @@
   </div>
 </div>
 
-<ImageFullscreenDialog bind:open={fullscreenOpen}
-                       imageSrc={renderedImage} />
+<ImageFullscreenDialog bind:open={image.fullscreenOpen}
+                       imageSrc={protection.resultImage} />
