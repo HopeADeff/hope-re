@@ -18,7 +18,7 @@ pub fn get_platform_info() -> PlatformInfo {
 
 fn format_os_info() -> String {
     let os_type = get_os_type();
-    let version = System::os_version().unwrap_or_else(|| String::new());
+    let version = System::os_version().unwrap_or_default();
 
     if version.is_empty() {
         os_type

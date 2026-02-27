@@ -239,8 +239,6 @@ fn parse_vram(vram_str: &str) -> Option<u64> {
         Some(number)
     } else if vram_lower.contains('g') {
         Some(number * 1024)
-    } else if vram_lower.contains('m') {
-        Some(number)
     } else {
         Some(number)
     }
