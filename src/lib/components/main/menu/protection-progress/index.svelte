@@ -44,7 +44,7 @@
         {/if}
       </div>
 
-      <Badge variant="secondary" class="font-mono text-xs">
+      <Badge variant="secondary" class="font-jetbrains-mono text-xs">
         {progress}&percnt;
       </Badge>
     </div>

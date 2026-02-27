@@ -1,4 +1,5 @@
-@import "@fontsource/montserrat";
+@import "@fontsource/be-vietnam-pro";
+@import "@fontsource-variable/jetbrains-mono";
 
 @import "tailwindcss";
 
@@ -9,7 +10,7 @@
 :root {
   --radius: 0.25rem;
   --background: oklch(0.904 0.016 103);
-  --foreground: oklch(0.25 0.01 95);
+  --foreground: oklch(0.18 0 95);
   --card: oklch(0.915 0.014 103);
   --card-foreground: oklch(0.25 0.01 95);
   --popover: oklch(0.915 0.014 103);
@@ -116,7 +117,8 @@
 }
 
 @theme {
-  --font-montserrat: "Montserrat", sans-serif;
+  --font-be-vietnam-pro: "Be Vietnam Pro", sans-serif;
+  --font-jetbrains-mono: "JetBrains Mono Variable", monospace;
 }
 
 @layer base {
@@ -124,6 +126,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-montserrat;
+    @apply bg-background text-foreground font-be-vietnam-pro;
   }
 }

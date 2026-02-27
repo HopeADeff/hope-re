@@ -1,7 +1,7 @@
 {
   "name": "hope-re",
   "type": "module",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "private": true,
   "scripts": {
     "dev": "vite dev",
@@ -15,7 +15,8 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "dependencies": {
-    "@fontsource/montserrat": "^5.2.8",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
+    "@fontsource/be-vietnam-pro": "^5.2.8",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/svelte-query": "^6.0.18",
     "@tanstack/svelte-query-devtools": "^6.0.4",

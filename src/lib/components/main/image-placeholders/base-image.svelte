@@ -79,7 +79,7 @@
             </div>
           {:else}
             <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-              <div class="p-5 rounded-2xl mb-4 bg-indigo-500/10">
+              <div class="p-4 rounded-lg mb-3 bg-indigo-500/10">
                 <UploadIcon class="size-10 text-indigo-600 dark:text-indigo-400" />
               </div>
               <p class="text-sm font-medium mb-1">
@@ -127,7 +127,7 @@
         {@render children?.()}
       {:else}
         <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-          <div class="p-5 rounded-2xl mb-4 bg-emerald-500/10">
+          <div class="p-4 rounded-lg mb-3 bg-emerald-500/10">
             <ImageIcon class="size-10 text-emerald-600 dark:text-emerald-400" />
           </div>
           <p class="text-sm font-medium text-muted-foreground mb-1">
