@@ -1,6 +1,6 @@
 [package]
 name = "hope-ad"
-version = "2.0.3"
+version = "2.0.4"
 description = "An AI-proofing arts app"
 authors = [ "HopeADeff" ]
 license = "MIT"
@@ -27,11 +27,27 @@ tauri = { version = "2.9.5", features = [] }
 tauri-plugin-log = "2"
 tauri-plugin-os = "2.3.2"
 tauri-plugin-store = "2.4.1"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
 sysinfo = "0.36.1"
-ort = { version = "=2.0.0-rc.11", default-features = false, features = [
+image = "0.25"
+base64 = "0.22"
+ndarray = "0.16"
+reqwest = { version = "0.12", features = [ "stream" ] }
+tokio = { version = "1", features = [
+  "fs",
+  "io-util",
+] }
+futures-util = "0.3"
+ort = { version = "2.0.0-rc.9", default-features = false, features = [
   "ndarray",
   "copy-dylibs",
-  "load-dynamic"
+  "download-binaries",
+  "tls-native",
+  "cuda",
+  "directml",
+  "coreml",
+  "xnnpack"
 ] }
 
 [target.'cfg(windows)'.dependencies]

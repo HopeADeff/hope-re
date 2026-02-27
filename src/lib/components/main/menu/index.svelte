@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Settings2Icon } from "@lucide/svelte";
+  import { SlidersVerticalIcon } from "@lucide/svelte";
   import { Separator } from "$lib/components/ui/separator";
 
   import type { ProtectionMenuProps } from "./types";
@@ -35,7 +35,7 @@
   <div class="space-y-6 p-6 border rounded-xl bg-card">
     <div class="flex items-center gap-3">
       <div class="p-2 rounded-lg bg-primary/10">
-        <Settings2Icon class="size-5 text-primary" />
+        <SlidersVerticalIcon class="size-5 text-primary" />
       </div>
       <h3 class="text-base font-medium">Protection Settings</h3>
     </div>

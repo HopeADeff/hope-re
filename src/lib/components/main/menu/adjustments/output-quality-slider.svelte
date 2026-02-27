@@ -35,7 +35,7 @@
              )}>
         {qualityLevel}
       </Badge>
-      <Badge variant="secondary" class="font-mono text-sm">
+      <Badge variant="secondary" class="font-jetbrains-mono text-sm">
         {value[0]}
       </Badge>
     </div>

@@ -4,7 +4,7 @@
   import { QueryClientProvider } from "@tanstack/svelte-query";
   import { SvelteQueryDevtools } from "@tanstack/svelte-query-devtools";
   import { platform } from "@tauri-apps/plugin-os";
-  import { Header, WindowTitle } from "$lib/components";
+  import { Header, ResourceDownloadGuard, WindowTitle } from "$lib/components";
 
   import "../app.css";
   import { Toaster } from "$lib/components/ui/sonner";
@@ -45,7 +45,9 @@
   <div class={cn("h-screen flex flex-col overflow-hidden", isWindows && "pt-[30px]")}>
     <Header />
     <main class="flex-1 overflow-auto">
-      {@render children()}
+      <ResourceDownloadGuard>
+        {@render children()}
+      </ResourceDownloadGuard>
     </main>
   </div>
 

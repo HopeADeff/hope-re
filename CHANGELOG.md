@@ -4,6 +4,61 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.4] - 2026-02-27
+
+### Features
+
+- Wire up real ONNX model inference for image protection using SPSA gradient estimation and PGD adversarial perturbation
+- Process images via overlapping 224x224 tiles with feathered blending for seamless full-resolution output
+- Pass style_index and target_index tensors to Glaze and Nightshade models respectively
+- Map render_quality to PGD iteration count and intensity to perturbation epsilon for user-controllable protection strength
+- Graceful fallback to simple noise when ONNX models are unavailable or fail to load
+- Resolve bundled ONNX model paths via Tauri AppHandle resource directory
+- Add `useProtectImage()` TanStack Svelte Query mutation for image protection invocations
+- Add `buildProtectionSettings()` helper to construct protection settings from UI state
+- Add `useImage()` composable for image upload (FileReader), download (Tauri dialog + fs), and fullscreen state
+- Add `useProtection()` composable for protection settings state, progress simulation, and mutation execution
+- Add iOS and Android GPU detection in system_info module
+- Add `tauri-plugin-dialog` and `tauri-plugin-fs` plugins with Tauri capability permissions for save dialog and file writing
+- Register `protect_image` Tauri command in invoke handler
+- Add platform-specific ONNX Runtime execution providers (ort crate):
+  - Windows x64: CUDA + DirectML
+  - macOS x64/ARM64: CoreML
+  - iOS: CoreML
+  - Linux x64/ARM64: CUDA + XNNPACK
+  - Android: XNNPACK
+- Add automatic ONNX model download on first launch from GitHub Releases with streaming progress
+- Add `check_models_status` and `download_model` Tauri commands for model lifecycle management
+- Add `ResourceDownloadGuard` dialog component that blocks app usage until all models are downloaded
+- Add `useModelDownload()` composable for sequential model download orchestration with Tauri event listening
+- Add `useModelsStatus()` and `useDownloadModel()` TanStack Query hooks for model download state
+
+### Bug Fixes
+
+- Fix `protect_image` command not performing real image processing (was using placeholder seeded noise instead of ONNX model inference)
+- Fix duplicate `build_execution_providers_internal()` dead code in protection.rs by reusing `build_execution_providers()` from capabilities.rs
+- Fix glaze style mapping to match frontend values (abstract, impressionist, cubist, sketch, watercolor)
+- Fix nightshade target mapping to match frontend values (dog, cat, car, landscape, person, building, food, abstract)
+- Fix missing iOS and Android branches in gpu.rs `detect_gpu()` cfg dispatch
+- Fix badge border-radius from rounded-full to rounded-lg for consistent Zen aesthetic
+- Fix image placeholder icon containers border-radius (rounded-2xl to rounded-lg) and spacing
+- Filter inference capabilities to only return execution providers where `is_available()` is true
+- Remove `available` and `registered` fields from `ExecutionProviderInfo` since all listed providers are available
+
+### Changed
+
+- Refactor +page.svelte from 333 lines to 166 lines by extracting logic into composable files
+- Move image upload, download, and fullscreen logic to `use-image.svelte.ts` composable
+- Move protection settings state, progress simulation, and execution to `use-protection.svelte.ts` composable
+- Convert `protectImage()` from direct async invoke to TanStack `createMutation` wrapper
+- Update `protect_image` Tauri command signature to accept `AppHandle` for resource path resolution
+- Update primary font from Montserrat to Be Vietnam Pro for cleaner Zen-like aesthetic
+- Add JetBrains Mono Variable font for numeric displays (intensity, output quality, progress)
+- Update foreground color to charcoal black (#2D2D2D / oklch(0.18 0 95)) for light mode with dark mode responsiveness
+- Derive `isProcessing` from `mutation.isPending` and `resultImage` from `mutation.data` instead of duplicating in `$state`
+- Remove ONNX model bundling from `tauri.conf.json` (models now downloaded at runtime)
+- Refactor `protection.rs` (697 lines) into `protection/` module directory with focused files: types, model loading, preprocessing, algorithms, SPSA optimization, tiling, and encoding
+
 ## [2.0.3] - 2026-02-26
 
 ### Bug Fixes
@@ -73,6 +128,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.0.4]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.2-alpha...v2.0.3
 [2.0.2-alpha]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.1-alpha...v2.0.2-alpha
 [2.0.1-alpha]: https://github.com/HopeArtOrg/hope-re/commits/v2.0.1-alpha

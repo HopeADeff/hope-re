@@ -17,6 +17,11 @@
     "store:allow-get",
     "store:allow-set",
     "store:allow-save",
-    "store:allow-load"
+    "store:allow-load",
+    "dialog:default",
+    "dialog:allow-save",
+    "fs:default",
+    "fs:allow-write",
+    "fs:allow-write-file"
   ]
 }
