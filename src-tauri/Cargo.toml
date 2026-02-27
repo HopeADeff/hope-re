@@ -1,6 +1,6 @@
 [package]
 name = "hope-ad"
-version = "2.0.4"
+version = "2.0.41"
 description = "An AI-proofing arts app"
 authors = [ "HopeADeff" ]
 license = "MIT"
@@ -33,7 +33,13 @@ sysinfo = "0.36.1"
 image = "0.25"
 base64 = "0.22"
 ndarray = "0.16"
-reqwest = { version = "0.12", features = [ "stream" ] }
+reqwest = { version = "0.12", default-features = false, features = [
+  "charset",
+  "http2",
+  "rustls-tls",
+  "stream",
+  "system-proxy"
+] }
 tokio = { version = "1", features = [
   "fs",
   "io-util",
@@ -43,7 +49,7 @@ ort = { version = "2.0.0-rc.9", default-features = false, features = [
   "ndarray",
   "copy-dylibs",
   "download-binaries",
-  "tls-native",
+  "tls-rustls",
   "cuda",
   "directml",
   "coreml",

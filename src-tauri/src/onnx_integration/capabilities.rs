@@ -35,7 +35,7 @@ pub(super) fn build_execution_providers() -> Vec<ort::ep::ExecutionProviderDispa
 
     if CoreML::default().is_available().unwrap_or(false) {
         let coreml = CoreML::default()
-            .with_subgraphs()
+            .with_subgraphs(true)
             .with_compute_units(ort::ep::coreml::ComputeUnits::CPUAndNeuralEngine);
         eps.push(coreml.build());
     }
@@ -51,7 +51,7 @@ pub(super) fn build_execution_providers() -> Vec<ort::ep::ExecutionProviderDispa
 
     if CoreML::default().is_available().unwrap_or(false) {
         let coreml = CoreML::default()
-            .with_subgraphs()
+            .with_subgraphs(true)
             .with_compute_units(ort::ep::coreml::ComputeUnits::CPUAndNeuralEngine);
         eps.push(coreml.build());
     }
