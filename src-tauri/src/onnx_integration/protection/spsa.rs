@@ -3,7 +3,8 @@ use ort::session::Session;
 use tauri::Emitter;
 
 use super::types::{
-    AlgorithmParams, ModelRunFn, ProtectionProgress, SPSA_DIRECTIONS_PER_ITER, TILE_SIZE,
+    AlgorithmParams, ModelRunFn, ProtectionProgress, TileProgress, SPSA_DIRECTIONS_PER_ITER,
+    TILE_SIZE,
 };
 
 struct Xoshiro128 {
@@ -63,9 +64,7 @@ pub fn spsa_pgd_on_tile(
     iterations: u32,
     run_model: &mut ModelRunFn,
     edge_weights: &[f32],
-    app: &tauri::AppHandle,
-    tile_current: u32,
-    tile_total: u32,
+    progress: &TileProgress,
 ) -> Result<Array4<f32>, String> {
     let shape = base_tile.shape();
     let num_elements = shape.iter().product::<usize>();
@@ -212,20 +211,20 @@ pub fn spsa_pgd_on_tile(
         }
 
         if iterations > 0 && k % 10 == 0 {
-            let tile_frac = if tile_total > 0 {
-                (tile_current - 1) as f64 / tile_total as f64
+            let tile_frac = if progress.tile_total > 0 {
+                (progress.tile_current - 1) as f64 / progress.tile_total as f64
             } else {
                 0.0
             };
             let iter_frac = (k + 1) as f64 / iterations as f64;
-            let per_tile = 1.0 / tile_total.max(1) as f64;
+            let per_tile = 1.0 / progress.tile_total.max(1) as f64;
             let percent = ((tile_frac + iter_frac * per_tile) * 95.0).min(95.0);
-            let _ = app.emit(
+            let _ = progress.app.emit(
                 "protection-progress",
                 ProtectionProgress {
                     stage: "processing".to_string(),
-                    tile_current,
-                    tile_total,
+                    tile_current: progress.tile_current,
+                    tile_total: progress.tile_total,
                     iteration_current: k + 1,
                     iteration_total: iterations,
                     percent,

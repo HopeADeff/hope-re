@@ -4,7 +4,9 @@ use tauri::Emitter;
 
 use super::preprocessing::{compute_edge_weight_map, preprocess_tile, tile_to_pixels};
 use super::spsa::spsa_pgd_on_tile;
-use super::types::{AlgorithmParams, ModelRunFn, ProtectionProgress, TILE_OVERLAP, TILE_SIZE};
+use super::types::{
+    AlgorithmParams, ModelRunFn, ProtectionProgress, TileProgress, TILE_OVERLAP, TILE_SIZE,
+};
 
 pub fn apply_model_protection(
     img: &DynamicImage,
@@ -52,9 +54,11 @@ pub fn apply_model_protection(
                 iterations,
                 run_model,
                 &edge_weights,
-                app,
-                tile_count + 1,
-                total_tiles,
+                &TileProgress {
+                    app: app.clone(),
+                    tile_current: tile_count + 1,
+                    tile_total: total_tiles,
+                },
             )?;
 
             let pixels = tile_to_pixels(&protected_tile, TILE_SIZE, TILE_SIZE);

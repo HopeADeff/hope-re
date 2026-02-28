@@ -25,6 +25,13 @@ pub struct ProtectionResult {
     pub model_used: bool,
 }
 
+pub struct TileProgress {
+    pub app: tauri::AppHandle,
+    pub tile_current: u32,
+    pub tile_total: u32,
+}
+
+#[derive(Debug, Clone)]
 pub struct AlgorithmParams {
     pub epsilon: f32,
     pub max_iterations: u32,
