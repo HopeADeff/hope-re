@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Hope-RE",
-  "version": "2.0.42",
+  "version": "2.0.44",
   "identifier": "com.HopeADeff.hope-re",
   "build": {
     "frontendDist": "../build",

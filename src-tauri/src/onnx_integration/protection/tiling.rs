@@ -1,9 +1,10 @@
 use image::DynamicImage;
 use ort::session::Session;
+use tauri::Emitter;
 
 use super::preprocessing::{preprocess_tile, tile_to_pixels};
 use super::spsa::spsa_pgd_on_tile;
-use super::types::{AlgorithmParams, ModelRunFn, TILE_OVERLAP, TILE_SIZE};
+use super::types::{AlgorithmParams, ModelRunFn, ProtectionProgress, TILE_OVERLAP, TILE_SIZE};
 
 pub fn apply_model_protection(
     img: &DynamicImage,
@@ -11,6 +12,7 @@ pub fn apply_model_protection(
     params: &AlgorithmParams,
     iterations: u32,
     run_model: &mut ModelRunFn,
+    app: &tauri::AppHandle,
 ) -> Result<DynamicImage, String> {
     let width = img.width();
     let height = img.height();
@@ -42,8 +44,16 @@ pub fn apply_model_protection(
 
             let base_tile = preprocess_tile(img, tile_x, tile_y, tile_w, tile_h);
 
-            let protected_tile =
-                spsa_pgd_on_tile(session, &base_tile, params, iterations, run_model)?;
+            let protected_tile = spsa_pgd_on_tile(
+                session,
+                &base_tile,
+                params,
+                iterations,
+                run_model,
+                app,
+                tile_count + 1,
+                total_tiles,
+            )?;
 
             let pixels = tile_to_pixels(&protected_tile, TILE_SIZE, TILE_SIZE);
 
@@ -80,6 +90,18 @@ pub fn apply_model_protection(
             if cfg!(debug_assertions) {
                 log::info!("Processed tile {}/{}", tile_count, total_tiles);
             }
+            let percent = (tile_count as f64 / total_tiles as f64 * 95.0).min(95.0);
+            let _ = app.emit(
+                "protection-progress",
+                ProtectionProgress {
+                    stage: "processing".to_string(),
+                    tile_current: tile_count,
+                    tile_total: total_tiles,
+                    iteration_current: iterations,
+                    iteration_total: iterations,
+                    percent,
+                },
+            );
         }
     }
 

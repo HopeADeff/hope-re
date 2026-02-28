@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     LoaderCircleIcon,
+    RotateCcwIcon,
     ShieldIcon,
     XIcon,
   } from "@lucide/svelte";
@@ -150,8 +151,13 @@
           onclick={handleCancel}
           disabled={!image.hasImage}
         >
-          <XIcon class="size-5" />
-          <span class="font-medium">Cancel</span>
+          {#if protection.isProcessing}
+            <XIcon class="size-5" />
+            <span class="font-medium">Cancel</span>
+          {:else}
+            <RotateCcwIcon class="size-5" />
+            <span class="font-medium">Clear</span>
+          {/if}
         </Button>
       </div>
     </div>

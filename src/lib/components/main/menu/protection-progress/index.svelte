@@ -56,12 +56,5 @@
         {message}
       </p>
     {/if}
-
-    {#if status === "processing" && progress > 0}
-      {@const timeRemaining = Math.ceil((100 - progress) * 0.4)}
-      <p class="text-xs text-muted-foreground">
-        Estimated time remaining: &#126;{timeRemaining} minutes
-      </p>
-    {/if}
   </div>
 {/if}

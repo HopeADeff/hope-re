@@ -3,8 +3,18 @@ import type {
   ProtectionProgressProps,
 } from "$lib/components";
 
+import { listen } from "@tauri-apps/api/event";
 import { buildProtectionSettings, useProtectImage } from "$lib/queries";
 import { toast } from "svelte-sonner";
+
+type ProtectionProgress = {
+  stage: string;
+  tile_current: number;
+  tile_total: number;
+  iteration_current: number;
+  iteration_total: number;
+  percent: number;
+};
 
 export type ProtectionState = {
   algorithm: Exclude<ProtectionMenuProps["algorithm"], undefined>;
@@ -24,7 +34,6 @@ const DEFAULTS: ProtectionState = {
   renderQuality: [50],
 };
 
-const PROGRESS_TICK_MS = 500;
 const SUCCESS_RESET_MS = 3000;
 const ERROR_RESET_MS = 5000;
 
@@ -40,7 +49,7 @@ export function useProtection() {
   let progressStatus = $state<ProtectionProgressProps["status"]>("idle");
   let progressMessage = $state<string>("");
 
-  let progressInterval: ReturnType<typeof setInterval> | null = null;
+  let progressInterval: (() => void) | null = null;
 
   const mutation = useProtectImage();
 
@@ -48,45 +57,48 @@ export function useProtection() {
   const resultImage = $derived(mutation.data?.image_base64 ?? null);
   const hasResult = $derived(mutation.isSuccess && !!mutation.data?.image_base64);
 
-  function startProgressSimulation() {
-    progressInterval = setInterval(() => {
-      if (progress < 90) {
-        progress += Math.random() * 10;
-        progress = Math.min(progress, 90);
-
-        if (progress < 20) {
-          progressMessage = "Analyzing image structure...";
-        }
-        else if (progress < 40) {
-          progressMessage = "Preparing protection algorithm...";
-        }
-        else if (progress < 60) {
-          progressMessage = `Applying ${algorithm} protection...`;
-        }
-        else if (progress < 80) {
-          progressMessage = "Processing pixel data...";
-        }
-        else {
-          progressMessage = "Finalizing output...";
-        }
-      }
-    }, PROGRESS_TICK_MS);
+  function stageMessage(stage: string): string {
+    switch (stage) {
+      case "loading":
+        return "Loading model...";
+      case "processing":
+        return `Applying ${algorithm} protection...`;
+      case "encoding":
+        return "Encoding output...";
+      case "complete":
+        return "Protection complete!";
+      default:
+        return "Processing...";
+    }
   }
 
-  function stopProgressSimulation() {
+  async function startProgressListener() {
+    const unlisten = await listen<ProtectionProgress>(
+      "protection-progress",
+      (event) => {
+        const data = event.payload;
+        progress = Math.round(data.percent);
+        progressMessage = stageMessage(data.stage);
+      },
+    );
+    progressInterval = unlisten;
+  }
+
+  function stopProgressListener() {
     if (progressInterval) {
-      clearInterval(progressInterval);
+      progressInterval();
       progressInterval = null;
     }
   }
 
   async function handleProtect(imageBase64: string) {
+    mutation.reset();
     progress = 0;
     progressStatus = "processing";
     progressMessage = "Initializing protection...";
     toast.info("Starting image protection...");
 
-    startProgressSimulation();
+    await startProgressListener();
 
     try {
       const settings = buildProtectionSettings({
@@ -103,7 +115,7 @@ export function useProtection() {
         settings,
       });
 
-      stopProgressSimulation();
+      stopProgressListener();
 
       if (!result.success) {
         throw new Error(result.message);
@@ -113,7 +125,12 @@ export function useProtection() {
       progressMessage = "Protection complete!";
       progressStatus = "success";
 
-      toast.success("Image protected successfully!");
+      if (result.model_used) {
+        toast.success("Image protected successfully!");
+      }
+      else {
+        toast.warning("Image protected with basic fallback. Download AI models for stronger protection.");
+      }
 
       setTimeout(() => {
         if (progressStatus === "success") {
@@ -124,7 +141,7 @@ export function useProtection() {
       }, SUCCESS_RESET_MS);
     }
     catch (error) {
-      stopProgressSimulation();
+      stopProgressListener();
       progress = 0;
       progressStatus = "error";
       progressMessage = "Failed to protect image. Please try again.";
@@ -150,7 +167,7 @@ export function useProtection() {
   }
 
   function resetProgress() {
-    stopProgressSimulation();
+    stopProgressListener();
     progress = 0;
     progressStatus = "idle";
     progressMessage = "";

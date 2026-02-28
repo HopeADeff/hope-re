@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.44] - 2026-02-28
+
+### Bug Fixes
+
+- Fix CUDA inference incorrectly reported as available on systems without NVIDIA GPU by adding `has_nvidia_gpu()` hardware check before `CUDA::default().is_available()`
+- Fix `render_quality=0` ("Faster" preset) producing unchanged images because `render_factor` was multiplied into intensity, making effective perturbation zero
+- Fix intensity and render quality settings conflated into a single multiplier instead of independently controlling perturbation strength and iteration count
+- Fix `render_quality` clamp range from `1..100` to `0..100` to accept the "Faster" preset value of 0
+- Fix fallback protection silently returning success with no log output in release builds by removing `cfg!(debug_assertions)` guard from `log::warn!` calls
+- Fix Android build failing for x86/x86_64 emulator targets by moving `ort` dependency from global `[dependencies]` to target-specific sections that exclude unsupported architectures
+- Fix protection progress stuck at 90% because frontend used fake `setInterval` simulation instead of real backend progress events
+- Fix all buttons rendering as circles/pills by changing `rounded-full` to `rounded-lg` in the `buttonVariants` base class
+- Fix rendered image overlay buttons (download/fullscreen) using explicit `rounded-full` override instead of `rounded-lg`
+- Fix dialog close button using `rounded-xs` instead of `rounded-lg` for consistent corner radius
+- Fix stale protected image from previous render visible when starting a new protection run by calling `mutation.reset()` before each new run
+
+### Changed
+
+- Rewrite `apply_fallback_noise()` from single-pass random noise to multi-iteration algorithm with varying block scales, decreasing step sizes, and accumulated perturbations clamped to epsilon bounds
+- Add `model_used` field to `ProtectionResult` so frontend can distinguish real ONNX model protection from fallback noise
+- Show warning toast "Image protected with basic fallback. Download AI models for stronger protection." when fallback is used instead of misleading success message
+- Add `onnx_stubs` module with stub Tauri commands for unsupported Android architectures (x86, x86_64) to allow compilation without ONNX Runtime
+- Gate `onnx_integration` module behind `cfg` to exclude unsupported Android targets
+- Replace fake frontend progress simulation with real `protection-progress` Tauri events emitted from Rust backend during tile processing and SPSA iterations
+- Add `ProtectionProgress` struct with stage, tile/iteration counts, and percentage for granular progress reporting
+- Pass `AppHandle` through `apply_model_protection` and `spsa_pgd_on_tile` to enable event emission
+- Update frontend `useProtection()` to use `listen()` for `protection-progress` events instead of `setInterval`
+- Update render quality time estimates to realistic ranges based on actual iteration counts (e.g., "~1-2 mins" for Faster, "~10-30 mins" for Default)
+- Remove fake "Estimated time remaining" formula from progress component
+- Update rendered image overlay button backgrounds from `bg-background/60` to `bg-muted/60` for subtler Zen aesthetic
+- Rename "Cancel" button to "Clear" with `RotateCcwIcon` when not processing; keep "Cancel" with `XIcon` during active protection
+
 ## [2.0.42] - 2026-02-28
 
 ### Bug Fixes
@@ -150,6 +182,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.0.44]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.42...v2.0.44
+[2.0.42]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.41...v2.0.42
 [2.0.41]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.4...v2.0.41
 [2.0.4]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.2-alpha...v2.0.3

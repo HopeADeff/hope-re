@@ -1,6 +1,6 @@
 [package]
 name = "hope-ad"
-version = "2.0.42"
+version = "2.0.44"
 description = "An AI-proofing arts app"
 authors = [ "HopeADeff" ]
 license = "MIT"
@@ -45,15 +45,13 @@ tokio = { version = "1", features = [
   "io-util",
 ] }
 futures-util = "0.3"
+
+[target.'cfg(windows)'.dependencies]
 ort = { version = "2.0.0-rc.9", default-features = false, features = [
   "ndarray",
   "copy-dylibs",
   "download-binaries",
-  "tls-rustls"
-] }
-
-[target.'cfg(windows)'.dependencies]
-ort = { version = "2.0.0-rc.9", default-features = false, features = [
+  "tls-rustls",
   "cuda",
   "directml"
 ] }
@@ -62,14 +60,30 @@ windows = { version = "0.61.3", features = [
   "Win32_System_Com"
 ] }
 
-[target.'cfg(any(target_os = "linux"))'.dependencies]
+[target.'cfg(all(target_os = "linux", not(target_os = "android")))'.dependencies]
 ort = { version = "2.0.0-rc.9", default-features = false, features = [
+  "ndarray",
+  "copy-dylibs",
+  "download-binaries",
+  "tls-rustls",
   "cuda",
   "xnnpack"
 ] }
 
 [target.'cfg(any(target_os = "macos", target_os = "ios"))'.dependencies]
-ort = { version = "2.0.0-rc.9", default-features = false, features = [ "coreml" ] }
+ort = { version = "2.0.0-rc.9", default-features = false, features = [
+  "ndarray",
+  "copy-dylibs",
+  "download-binaries",
+  "tls-rustls",
+  "coreml"
+] }
 
-[target.'cfg(target_os = "android")'.dependencies]
-ort = { version = "2.0.0-rc.9", default-features = false, features = [ "xnnpack" ] }
+[target.'cfg(all(target_os = "android", target_arch = "aarch64"))'.dependencies]
+ort = { version = "2.0.0-rc.9", default-features = false, features = [
+  "ndarray",
+  "copy-dylibs",
+  "download-binaries",
+  "tls-rustls",
+  "xnnpack"
+] }
