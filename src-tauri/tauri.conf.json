@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Hope-RE",
-  "version": "2.0.44",
-  "identifier": "com.HopeADeff.hope-re",
+  "version": "2.0.5",
+  "identifier": "com.HopeArtOrg.hope-re",
   "build": {
     "frontendDist": "../build",
     "devUrl": "http://localhost:3000",
@@ -33,6 +33,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": []
+    "resources": ["../src-models/models/*.onnx"]
   }
 }

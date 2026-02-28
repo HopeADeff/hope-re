@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.5] - 2026-02-28
+
+### Bug Fixes
+
+- Fix ONNX models not bundled in desktop production builds because `resources` array in `tauri.conf.json` was empty, causing silent fallback to basic random noise instead of CLIP-guided adversarial perturbation
+- Fix SPSA optimization producing weak perturbations due to low default intensity (20/100, epsilon=0.024) being 40% of training baseline (epsilon=0.06); raise default to 50/100 to match training
+- Fix SPSA optimization under-converging due to low default render quality (50%) halving iteration count; raise default to 75%
+
+### Features
+
+- Add edge-weighted perceptual loss to SPSA-PGD optimization loop, ported from training notebook `2_noise_algorithm.ipynb`:
+  - Compute per-tile edge weights via grayscale gradient magnitude normalized to [0.3, 1.0]
+  - Evaluate combined loss (semantic + 0.5 * perceptual * 100) during SPSA finite-difference steps so perturbations concentrate along edges where they are least visible to humans
+  - Weight gradient updates by edge strength to make larger optimization steps at edges and smaller steps in smooth regions
+- Add prominent amber warning banner on the main page when protection completes with fallback (model not loaded) instead of relying solely on a dismissible toast notification
+- Expose `modelUsed` and `resultMessage` from `useProtection()` composable for downstream UI consumption
+
+### Changed
+
+- Bundle ONNX models in desktop builds via `"resources": ["../src-models/models/*.onnx"]` in `tauri.conf.json`, matching the existing Android configuration
+- Increase `SPSA_DIRECTIONS_PER_ITER` from 8 to 16 for better gradient estimates in the 150,528-dimensional pixel space
+- Add `PERCEPTUAL_WEIGHT`, `PERCEPTUAL_SCALE`, `EDGE_WEIGHT_MIN`, and `EDGE_WEIGHT_RANGE` constants to `types.rs` for configurable edge-aware perceptual loss
+- Raise default intensity slider from 20 to 50 and default render quality from 50 to 75 in `use-protection.svelte.ts`
+
 ## [2.0.44] - 2026-02-28
 
 ### Bug Fixes
@@ -182,6 +206,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.0.5]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.44...v2.0.5
 [2.0.44]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.42...v2.0.44
 [2.0.42]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.41...v2.0.42
 [2.0.41]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.4...v2.0.41

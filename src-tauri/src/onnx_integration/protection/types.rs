@@ -3,7 +3,11 @@ use ort::session::Session;
 
 pub const TILE_SIZE: u32 = 224;
 pub const TILE_OVERLAP: u32 = 16;
-pub const SPSA_DIRECTIONS_PER_ITER: usize = 8;
+pub const SPSA_DIRECTIONS_PER_ITER: usize = 16;
+pub const PERCEPTUAL_WEIGHT: f32 = 0.5;
+pub const PERCEPTUAL_SCALE: f32 = 100.0;
+pub const EDGE_WEIGHT_MIN: f32 = 0.3;
+pub const EDGE_WEIGHT_RANGE: f32 = 0.7;
 
 pub type ModelRunFn = dyn FnMut(&mut Session, &Array4<f32>) -> Result<f32, String>;
 

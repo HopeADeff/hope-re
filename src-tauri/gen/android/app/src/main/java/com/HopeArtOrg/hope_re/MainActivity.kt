@@ -1,4 +1,4 @@
-package com.HopeADeff.hope_re
+package com.HopeArtOrg.hope_re
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
