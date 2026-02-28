@@ -22,6 +22,8 @@
     "dialog:allow-save",
     "fs:default",
     "fs:allow-write",
-    "fs:allow-write-file"
+    "fs:allow-write-file",
+    "updater:default",
+    "process:allow-restart"
   ]
 }

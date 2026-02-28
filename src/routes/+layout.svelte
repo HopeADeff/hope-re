@@ -4,7 +4,7 @@
   import { QueryClientProvider } from "@tanstack/svelte-query";
   import { SvelteQueryDevtools } from "@tanstack/svelte-query-devtools";
   import { platform } from "@tauri-apps/plugin-os";
-  import { Header, ResourceDownloadGuard, WindowTitle } from "$lib/components";
+  import { Header, ResourceDownloadGuard, UpdateDialog, WindowTitle } from "$lib/components";
 
   import "../app.css";
   import { Toaster } from "$lib/components/ui/sonner";
@@ -37,6 +37,7 @@
 
 <QueryClientProvider client={data.queryClient}>
   <Toaster position="top-center" />
+  <UpdateDialog />
 
   {#if isWindows}
     <WindowTitle />

@@ -66,6 +66,7 @@ pub async fn protect_image(
 
             match model_result {
                 Ok(mut session) => {
+                    log::info!("Noise ONNX model loaded successfully");
                     let mut run = |s: &mut Session, input: &Array4<f32>| -> Result<f32, String> {
                         run_noise_model(s, input)
                     };
@@ -84,7 +85,7 @@ pub async fn protect_image(
                     )
                 }
                 Err(e) => {
-                    log::warn!("Falling back to simple noise: {}", e);
+                    log::error!("Noise ONNX model failed to load: {}", e);
                     let seed = std::time::SystemTime::now()
                         .duration_since(std::time::UNIX_EPOCH)
                         .unwrap_or_else(|_| std::time::Duration::from_secs(0))
@@ -109,6 +110,7 @@ pub async fn protect_image(
 
             match model_result {
                 Ok(mut session) => {
+                    log::info!("Glaze ONNX model loaded successfully");
                     let mut run =
                         move |s: &mut Session, input: &Array4<f32>| -> Result<f32, String> {
                             run_glaze_model(s, input, style_index)
@@ -128,7 +130,7 @@ pub async fn protect_image(
                     )
                 }
                 Err(e) => {
-                    log::warn!("Falling back to simple noise for glaze: {}", e);
+                    log::error!("Glaze ONNX model failed to load: {}", e);
                     let seed = get_glaze_style_index(style) as u32;
                     let effective_intensity = intensity * 0.8;
                     let result = apply_fallback_noise(&img, effective_intensity, seed, iterations);
@@ -151,6 +153,7 @@ pub async fn protect_image(
 
             match model_result {
                 Ok(mut session) => {
+                    log::info!("Nightshade ONNX model loaded successfully");
                     let mut run =
                         move |s: &mut Session, input: &Array4<f32>| -> Result<f32, String> {
                             run_nightshade_model(s, input, target_index)
@@ -170,7 +173,7 @@ pub async fn protect_image(
                     )
                 }
                 Err(e) => {
-                    log::warn!("Falling back to simple noise for nightshade: {}", e);
+                    log::error!("Nightshade ONNX model failed to load: {}", e);
                     let seed = get_nightshade_target_index(target) as u32 + 100;
                     let effective_intensity = intensity * 1.2;
                     let result = apply_fallback_noise(&img, effective_intensity, seed, iterations);

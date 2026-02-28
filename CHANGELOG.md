@@ -4,6 +4,42 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.7] - 2026-02-28
+
+### Features
+
+- Add Tauri updater plugin for automatic desktop app updates with signed artifacts
+- Add update dialog that checks for new versions on launch with download progress and one-click install
+- Add `useUpdater()` composable for update check, download, install, and dismiss lifecycle
+- Add `tauri-plugin-process` for app restart after update installation
+
+### Performance
+
+- Add perceptual loss term to SPSA gradient estimation matching Python `combined_loss()` pattern with `mean(diff^2 * (1.5 - edge_weight)) * perceptual_weight * 100` scaling
+- Add edge-weighted gradient application before sign operation to concentrate perturbations in textured areas where they are less visible to humans
+- Replace LCG-based `seeded_rand` with Xoshiro128++ PRNG for statistically independent Rademacher random directions in SPSA
+- Add bilinear interpolation in tile-to-image blending replacing nearest-neighbor sampling to eliminate blocky artifacts on edge tiles
+- Increase noise epsilon from 0.06 to 0.08 and iterations from 200 to 250 for stronger AI disruption
+- Increase glaze epsilon from 0.035 to 0.05 and iterations from 300 to 350 for more effective style cloaking
+- Increase nightshade epsilon from 0.03 to 0.045 for stronger data poisoning perturbations
+- Fix noise and nightshade alpha_multiplier from 2.0 to 2.5 matching actual Python training code
+
+### Bug Fixes
+
+- Fix `compute_edge_weight_map()` never being called despite existing in preprocessing, leaving edge-aware perturbation weighting completely inactive
+- Fix ONNX inference errors silently treated as `0.0` loss corrupting gradient estimates; add consecutive failure counter with 5-failure abort threshold
+- Fix gradient averaging dividing by total directions instead of only successful directions, under-weighting gradients when some ONNX inferences fail
+- Fix GELU activation mismatch in ONNX export notebook using `jax.nn.gelu(x, approximate=True)` instead of `nn.gelu(x)` matching training notebooks
+
+### Changed
+
+- Add `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` to publish workflow for signing updater artifacts
+- Add `updaterJsonPreferNsis` to publish workflow for Windows NSIS installer preference in `latest.json`
+- Add `updater:default` and `process:allow-restart` permissions to Tauri capabilities
+- Add `createUpdaterArtifacts` to bundle config and updater plugin config with public key and GitHub Releases endpoint
+- Add `perceptual_weight` field to `AlgorithmParams` struct with per-algorithm defaults (noise: 0.5, glaze: 1.0, nightshade: 1.5)
+- Pass edge weight map from `tiling.rs` through to `spsa_pgd_on_tile()` for per-tile edge-aware optimization
+
 ## [2.0.44] - 2026-02-28
 
 ### Bug Fixes
@@ -182,6 +218,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.0.7]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.44...v2.0.7
 [2.0.44]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.42...v2.0.44
 [2.0.42]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.41...v2.0.42
 [2.0.41]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.4...v2.0.41

@@ -2,8 +2,8 @@ use ndarray::Array4;
 use ort::session::Session;
 
 pub const TILE_SIZE: u32 = 224;
-pub const TILE_OVERLAP: u32 = 16;
-pub const SPSA_DIRECTIONS_PER_ITER: usize = 8;
+pub const TILE_OVERLAP: u32 = 32;
+pub const SPSA_DIRECTIONS_PER_ITER: usize = 16;
 
 pub type ModelRunFn = dyn FnMut(&mut Session, &Array4<f32>) -> Result<f32, String>;
 
@@ -29,6 +29,7 @@ pub struct AlgorithmParams {
     pub epsilon: f32,
     pub max_iterations: u32,
     pub alpha_multiplier: f32,
+    pub perceptual_weight: f32,
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
