@@ -4,29 +4,48 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [2.0.5] - 2026-02-28
+## [2.0.7] - 2026-02-28
+
+### Features
+
+- Add Tauri updater plugin for automatic desktop app updates with signed artifacts
+- Add update dialog that checks for new versions on launch with download progress and one-click install
+- Add `useUpdater()` composable for update check, download, install, and dismiss lifecycle
+- Add `tauri-plugin-process` for app restart after update installation
+
+### Performance
+
+- Add perceptual loss term to SPSA gradient estimation matching Python `combined_loss()` pattern with `mean(diff^2 * (1.5 - edge_weight)) * perceptual_weight * 100` scaling
+- Add edge-weighted gradient application before sign operation to concentrate perturbations in textured areas where they are less visible to humans
+- Replace LCG-based `seeded_rand` with Xoshiro128++ PRNG for statistically independent Rademacher random directions in SPSA
+- Add bilinear interpolation in tile-to-image blending replacing nearest-neighbor sampling to eliminate blocky artifacts on edge tiles
+- Increase noise epsilon from 0.06 to 0.08 and iterations from 200 to 250 for stronger AI disruption
+- Increase glaze epsilon from 0.035 to 0.05 and iterations from 300 to 350 for more effective style cloaking
+- Increase nightshade epsilon from 0.03 to 0.045 for stronger data poisoning perturbations
+- Fix noise and nightshade alpha_multiplier from 2.0 to 2.5 matching actual Python training code
 
 ### Bug Fixes
 
+- Fix `compute_edge_weight_map()` never being called despite existing in preprocessing, leaving edge-aware perturbation weighting completely inactive
+- Fix ONNX inference errors silently treated as `0.0` loss corrupting gradient estimates; add consecutive failure counter with 5-failure abort threshold
+- Fix gradient averaging dividing by total directions instead of only successful directions, under-weighting gradients when some ONNX inferences fail
+- Fix GELU activation mismatch in ONNX export notebook using `jax.nn.gelu(x, approximate=True)` instead of `nn.gelu(x)` matching training notebooks
 - Fix ONNX models not bundled in desktop production builds because `resources` array in `tauri.conf.json` was empty, causing silent fallback to basic random noise instead of CLIP-guided adversarial perturbation
 - Fix SPSA optimization producing weak perturbations due to low default intensity (20/100, epsilon=0.024) being 40% of training baseline (epsilon=0.06); raise default to 50/100 to match training
 - Fix SPSA optimization under-converging due to low default render quality (50%) halving iteration count; raise default to 75%
 
-### Features
-
-- Add edge-weighted perceptual loss to SPSA-PGD optimization loop, ported from training notebook `2_noise_algorithm.ipynb`:
-  - Compute per-tile edge weights via grayscale gradient magnitude normalized to [0.3, 1.0]
-  - Evaluate combined loss (semantic + 0.5 * perceptual * 100) during SPSA finite-difference steps so perturbations concentrate along edges where they are least visible to humans
-  - Weight gradient updates by edge strength to make larger optimization steps at edges and smaller steps in smooth regions
-- Add prominent amber warning banner on the main page when protection completes with fallback (model not loaded) instead of relying solely on a dismissible toast notification
-- Expose `modelUsed` and `resultMessage` from `useProtection()` composable for downstream UI consumption
-
 ### Changed
 
-- Bundle ONNX models in desktop builds via `"resources": ["../src-models/models/*.onnx"]` in `tauri.conf.json`, matching the existing Android configuration
-- Increase `SPSA_DIRECTIONS_PER_ITER` from 8 to 16 for better gradient estimates in the 150,528-dimensional pixel space
-- Add `PERCEPTUAL_WEIGHT`, `PERCEPTUAL_SCALE`, `EDGE_WEIGHT_MIN`, and `EDGE_WEIGHT_RANGE` constants to `types.rs` for configurable edge-aware perceptual loss
+- Add `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` to publish workflow for signing updater artifacts
+- Add `updaterJsonPreferNsis` to publish workflow for Windows NSIS installer preference in `latest.json`
+- Add `updater:default` and `process:allow-restart` permissions to Tauri capabilities
+- Add `createUpdaterArtifacts` to bundle config and updater plugin config with public key and GitHub Releases endpoint
+- Add `perceptual_weight` field to `AlgorithmParams` struct with per-algorithm defaults (noise: 0.5, glaze: 1.0, nightshade: 1.5)
+- Pass edge weight map from `tiling.rs` through to `spsa_pgd_on_tile()` for per-tile edge-aware optimization
+- Bundle ONNX models in desktop builds via `"resources": ["../src-models/models/*.onnx"]` in `tauri.conf.json`
 - Raise default intensity slider from 20 to 50 and default render quality from 50 to 75 in `use-protection.svelte.ts`
+- Add prominent amber warning banner on the main page when protection completes with fallback (model not loaded)
+- Expose `modelUsed` and `resultMessage` from `useProtection()` composable for downstream UI consumption
 
 ## [2.0.44] - 2026-02-28
 
@@ -206,7 +225,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
-[2.0.5]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.44...v2.0.5
+[2.0.7]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.44...v2.0.7
 [2.0.44]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.42...v2.0.44
 [2.0.42]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.41...v2.0.42
 [2.0.41]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.4...v2.0.41

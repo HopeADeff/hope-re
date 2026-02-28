@@ -1,6 +1,6 @@
 [package]
 name = "hope-ad"
-version = "2.0.5"
+version = "2.0.7"
 description = "An AI-proofing arts app"
 authors = [ "HopeArtOrg" ]
 license = "MIT"
@@ -29,6 +29,8 @@ tauri-plugin-os = "2.3.2"
 tauri-plugin-store = "2.4.1"
 tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
 sysinfo = "0.36.1"
 image = "0.25"
 base64 = "0.22"
