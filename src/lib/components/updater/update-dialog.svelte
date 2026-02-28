@@ -1,20 +1,23 @@
 <script lang="ts">
-  import { DownloadIcon, LoaderCircleIcon, RefreshCwIcon } from "@lucide/svelte";
+  import { ArrowUpCircleIcon, LoaderCircleIcon } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
   import { Progress } from "$lib/components/ui/progress";
   import { useUpdater } from "$lib/stores/use-updater.svelte";
-  import { onMount } from "svelte";
 
   const updater = useUpdater();
+  let hasAutoOpened = false;
 
-  onMount(() => {
-    updater.checkForUpdate();
+  $effect(() => {
+    if (updater.isUpdateAvailable && !hasAutoOpened) {
+      hasAutoOpened = true;
+      updater.openDialog();
+    }
   });
 </script>
 
 <Dialog.Root
-  open={updater.isUpdateAvailable}
+  open={updater.dialogOpen}
   onOpenChange={(open) => {
     if (!open)
       updater.dismiss();
@@ -24,30 +27,32 @@
     <Dialog.Header>
       <div class="flex items-center gap-3">
         <div class="p-2 rounded-lg bg-primary/10">
-          <DownloadIcon class="size-4" />
+          <ArrowUpCircleIcon class="size-4" />
         </div>
-        <Dialog.DialogTitle class="text-lg font-bold">
-          Update Available
-        </Dialog.DialogTitle>
+        <div>
+          <Dialog.DialogTitle class="text-lg font-bold">
+            New Version
+          </Dialog.DialogTitle>
+          {#if updater.version}
+            <p class="text-xs text-muted-foreground mt-0.5">v{updater.version}</p>
+          {/if}
+        </div>
       </div>
-      <Dialog.Description class="text-sm text-muted-foreground mt-2">
-        Version {updater.version} is ready to install.
-      </Dialog.Description>
     </Dialog.Header>
 
     <div class="mt-4 space-y-4">
       {#if updater.releaseNotes}
         <div class="rounded-lg border bg-card p-4">
-          <p class="text-xs font-medium text-muted-foreground mb-2">Release Notes</p>
-          <p class="text-sm whitespace-pre-line">{updater.releaseNotes}</p>
+          <p class="text-xs font-medium text-muted-foreground mb-2">What's new</p>
+          <p class="text-sm whitespace-pre-line leading-relaxed">{updater.releaseNotes}</p>
         </div>
       {/if}
 
       {#if updater.isDownloading}
         <div class="space-y-2">
           <div class="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Downloading...</span>
-            <span>{updater.downloadProgress}%</span>
+            <span>Downloading</span>
+            <span class="font-jetbrains-mono">{updater.downloadProgress}%</span>
           </div>
           <Progress value={updater.downloadProgress} />
         </div>
@@ -56,7 +61,7 @@
       {#if updater.isInstalling}
         <div class="flex items-center gap-2 text-sm text-muted-foreground">
           <LoaderCircleIcon class="size-4 animate-spin" />
-          <span>Installing and restarting...</span>
+          <span>Installing and restarting</span>
         </div>
       {/if}
 
@@ -81,8 +86,8 @@
           onclick={() => updater.downloadAndInstall()}
           class="gap-2"
         >
-          <RefreshCwIcon class="size-3.5" />
-          Update Now
+          <ArrowUpCircleIcon class="size-3.5" />
+          Update
         </Button>
       {/if}
     </Dialog.Footer>

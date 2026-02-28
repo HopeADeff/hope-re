@@ -2,11 +2,82 @@ use image::DynamicImage;
 use ort::session::Session;
 use tauri::Emitter;
 
-use super::preprocessing::{compute_edge_weight_map, preprocess_tile, tile_to_pixels};
+use super::preprocessing::{compute_edge_weight_map, preprocess_tile};
 use super::spsa::spsa_pgd_on_tile;
 use super::types::{
     AlgorithmParams, ModelRunFn, ProtectionProgress, TileProgress, TILE_OVERLAP, TILE_SIZE,
 };
+
+struct TileRegion {
+    x: u32,
+    y: u32,
+    w: u32,
+    h: u32,
+}
+
+fn blend_tile_direct(
+    protected_tile: &ndarray::Array4<f32>,
+    region: &TileRegion,
+    width: u32,
+    result_accum: &mut [f32],
+    weight_accum: &mut [f32],
+) {
+    let ts = TILE_SIZE as usize;
+    let no_scale = region.w == TILE_SIZE && region.h == TILE_SIZE;
+
+    for py in 0..region.h {
+        for px in 0..region.w {
+            let dst_x = region.x + px;
+            let dst_y = region.y + py;
+            let dst_pixel = (dst_y * width + dst_x) as usize;
+            let dst_idx = dst_pixel * 3;
+
+            let edge_x = px.min(region.w - 1 - px).min(TILE_OVERLAP) as f32 / TILE_OVERLAP as f32;
+            let edge_y = py.min(region.h - 1 - py).min(TILE_OVERLAP) as f32 / TILE_OVERLAP as f32;
+            let weight = edge_x.min(edge_y).max(0.01);
+
+            if dst_idx + 2 >= result_accum.len() {
+                continue;
+            }
+
+            if no_scale {
+                let sx = px as usize;
+                let sy = py as usize;
+                for c in 0..3 {
+                    let v = protected_tile[[0, sy, sx, c]] * 255.0;
+                    result_accum[dst_idx + c] += v * weight;
+                }
+            } else {
+                let scale_x = TILE_SIZE as f32 / region.w as f32;
+                let scale_y = TILE_SIZE as f32 / region.h as f32;
+                let src_fx = px as f32 * scale_x;
+                let src_fy = py as f32 * scale_y;
+
+                let x0 = (src_fx as usize).min(ts - 1);
+                let y0 = (src_fy as usize).min(ts - 1);
+                let x1 = (x0 + 1).min(ts - 1);
+                let y1 = (y0 + 1).min(ts - 1);
+                let fx = src_fx - x0 as f32;
+                let fy = src_fy - y0 as f32;
+
+                for c in 0..3 {
+                    let v00 = protected_tile[[0, y0, x0, c]];
+                    let v10 = protected_tile[[0, y0, x1, c]];
+                    let v01 = protected_tile[[0, y1, x0, c]];
+                    let v11 = protected_tile[[0, y1, x1, c]];
+                    let v = (v00 * (1.0 - fx) * (1.0 - fy)
+                        + v10 * fx * (1.0 - fy)
+                        + v01 * (1.0 - fx) * fy
+                        + v11 * fx * fy)
+                        * 255.0;
+                    result_accum[dst_idx + c] += v * weight;
+                }
+            }
+
+            weight_accum[dst_pixel] += weight;
+        }
+    }
+}
 
 pub fn apply_model_protection(
     img: &DynamicImage,
@@ -44,7 +115,14 @@ pub fn apply_model_protection(
             let tile_w = TILE_SIZE.min(width - tile_x);
             let tile_h = TILE_SIZE.min(height - tile_y);
 
-            let base_tile = preprocess_tile(img, tile_x, tile_y, tile_w, tile_h);
+            let region = TileRegion {
+                x: tile_x,
+                y: tile_y,
+                w: tile_w,
+                h: tile_h,
+            };
+
+            let base_tile = preprocess_tile(img, region.x, region.y, region.w, region.h);
             let edge_weights = compute_edge_weight_map(&base_tile);
 
             let protected_tile = spsa_pgd_on_tile(
@@ -61,61 +139,13 @@ pub fn apply_model_protection(
                 },
             )?;
 
-            let pixels = tile_to_pixels(&protected_tile, TILE_SIZE, TILE_SIZE);
-
-            let scale_x = TILE_SIZE as f32 / tile_w as f32;
-            let scale_y = TILE_SIZE as f32 / tile_h as f32;
-
-            for py in 0..tile_h {
-                for px in 0..tile_w {
-                    let src_fx = px as f32 * scale_x;
-                    let src_fy = py as f32 * scale_y;
-
-                    let x0 = (src_fx as u32).min(TILE_SIZE - 1);
-                    let y0 = (src_fy as u32).min(TILE_SIZE - 1);
-                    let x1 = (x0 + 1).min(TILE_SIZE - 1);
-                    let y1 = (y0 + 1).min(TILE_SIZE - 1);
-                    let fx = src_fx - x0 as f32;
-                    let fy = src_fy - y0 as f32;
-
-                    let idx00 = ((y0 * TILE_SIZE + x0) * 4) as usize;
-                    let idx10 = ((y0 * TILE_SIZE + x1) * 4) as usize;
-                    let idx01 = ((y1 * TILE_SIZE + x0) * 4) as usize;
-                    let idx11 = ((y1 * TILE_SIZE + x1) * 4) as usize;
-
-                    let dst_x = tile_x + px;
-                    let dst_y = tile_y + py;
-                    let dst_pixel = (dst_y * width + dst_x) as usize;
-                    let dst_idx = dst_pixel * 3;
-
-                    let edge_x =
-                        px.min(tile_w - 1 - px).min(TILE_OVERLAP) as f32 / TILE_OVERLAP as f32;
-                    let edge_y =
-                        py.min(tile_h - 1 - py).min(TILE_OVERLAP) as f32 / TILE_OVERLAP as f32;
-                    let weight = edge_x.min(edge_y).max(0.01);
-
-                    let max_idx = pixels.len();
-                    if dst_idx + 2 < result_accum.len()
-                        && idx00 + 2 < max_idx
-                        && idx10 + 2 < max_idx
-                        && idx01 + 2 < max_idx
-                        && idx11 + 2 < max_idx
-                    {
-                        for c in 0..3 {
-                            let v00 = pixels[idx00 + c] as f32;
-                            let v10 = pixels[idx10 + c] as f32;
-                            let v01 = pixels[idx01 + c] as f32;
-                            let v11 = pixels[idx11 + c] as f32;
-                            let v = v00 * (1.0 - fx) * (1.0 - fy)
-                                + v10 * fx * (1.0 - fy)
-                                + v01 * (1.0 - fx) * fy
-                                + v11 * fx * fy;
-                            result_accum[dst_idx + c] += v * weight;
-                        }
-                        weight_accum[dst_pixel] += weight;
-                    }
-                }
-            }
+            blend_tile_direct(
+                &protected_tile,
+                &region,
+                width,
+                &mut result_accum,
+                &mut weight_accum,
+            );
 
             tile_count += 1;
             if cfg!(debug_assertions) {
