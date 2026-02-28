@@ -70,7 +70,7 @@ fn expand_edge_weights(edge_weights: &[f32], num_elements: usize) -> Vec<f32> {
     edge_flat
 }
 
-const MOMENTUM_BETA: f32 = 0.8;
+const MOMENTUM_BETA: f32 = 0.9;
 
 pub fn spsa_pgd_on_tile(
     session: &mut Session,
@@ -86,7 +86,7 @@ pub fn spsa_pgd_on_tile(
     let mut perturbation = vec![0.0f32; num_elements];
     let epsilon = params.epsilon;
     let alpha = epsilon * params.alpha_multiplier / iterations.max(1) as f32;
-    let ck_initial = epsilon * 0.15;
+    let ck_initial = epsilon * 0.1;
     let perceptual_weight = params.perceptual_weight;
 
     let edge_flat = expand_edge_weights(edge_weights, num_elements);
@@ -108,8 +108,8 @@ pub fn spsa_pgd_on_tile(
     let max_consecutive_failures = 5u32;
 
     for k in 0..iterations {
-        let ck = ck_initial / ((k + 1) as f32).powf(0.05);
-        let ak = alpha / ((k + 1) as f32).powf(0.3);
+        let ck = ck_initial / ((k + 1) as f32).powf(0.101);
+        let ak = alpha / ((k + 1) as f32).powf(0.602);
 
         for v in grad_estimate.iter_mut() {
             *v = 0.0;

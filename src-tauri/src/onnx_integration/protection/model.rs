@@ -22,7 +22,7 @@ pub fn load_model(model_path: &std::path::Path) -> Result<Session, String> {
 
     Session::builder()
         .map_err(|e| format!("Failed to create session builder: {}", e))?
-        .with_optimization_level(ort::session::GraphOptimizationLevel::Level3)
+        .with_optimization_level(ort::session::builder::GraphOptimizationLevel::Level3)
         .map_err(|e| format!("Failed to set optimization level: {}", e))?
         .commit_from_memory(&model_bytes)
         .map_err(|e| format!("Failed to load model from {:?}: {}", model_path, e))

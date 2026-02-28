@@ -24,14 +24,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- Double noise algorithm epsilon from 0.08 to 0.16, increase max iterations from 50 to 80, and raise `alpha_multiplier` from 3.5 to 5.0 for significantly stronger AI disruption perturbations
-- Double glaze algorithm epsilon from 0.05 to 0.10, increase max iterations from 60 to 100, and raise `alpha_multiplier` from 3.0 to 4.5 for more aggressive style cloaking
-- Nearly triple nightshade algorithm epsilon from 0.045 to 0.12, increase max iterations from 75 to 120, and raise `alpha_multiplier` from 3.5 to 5.0 for much stronger data poisoning
-- Reduce perceptual weight from 0.5 to 0.3 (noise), 1.0 to 0.6 (glaze), and 1.5 to 0.8 (nightshade) so model-guided gradients dominate over perceptual smoothing
-- Increase `SPSA_DIRECTIONS_PER_ITER` from 4 to 8 for more accurate gradient estimation per iteration
-- Increase SPSA perturbation probe size (`ck_initial`) from `epsilon * 0.1` to `epsilon * 0.15` for larger finite-difference steps
-- Flatten SPSA decay exponents from 0.101/0.602 to 0.05/0.3 so perturbation and step sizes remain large throughout optimization
-- Reduce momentum beta from 0.9 to 0.8 so new gradient information takes effect more immediately
+- Align noise algorithm parameters to exact training values: epsilon=0.06, iterations=200, alpha_multiplier=2.5, perceptual_weight=0.5
+- Align glaze algorithm parameters to exact training values: epsilon=0.035, iterations=300, alpha_multiplier=2.0, perceptual_weight=1.0
+- Align nightshade algorithm parameters to exact training values: epsilon=0.03, iterations=500, alpha_multiplier=2.5, perceptual_weight=1.5
+- Restore SPSA decay exponents to standard values (gamma=0.101, alpha=0.602) matching optimization literature
+- Restore SPSA momentum beta to 0.9 and perturbation probe size (`ck_initial`) to `epsilon * 0.1` for stable convergence
 
 ## [2.0.77] - 2026-02-28
 
