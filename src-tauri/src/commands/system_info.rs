@@ -9,6 +9,7 @@ pub struct SystemInfo {
     pub memory: String,
     pub gpu: String,
     pub storage: String,
+    pub app_version: String,
 }
 
 #[tauri::command]
@@ -19,5 +20,6 @@ pub fn get_system_info() -> Result<SystemInfo, String> {
         memory: system_info::get_memory_info(),
         gpu: system_info::get_gpu_info(),
         storage: system_info::get_storage_info(),
+        app_version: env!("CARGO_PKG_VERSION").to_string(),
     })
 }

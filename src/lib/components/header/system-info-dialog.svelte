@@ -1,5 +1,6 @@
 <script lang="ts">
   import {
+    BoxIcon,
     CircleAlertIcon,
     CpuIcon,
     GlobeIcon,
@@ -119,6 +120,18 @@
                   <p class="text-sm">
                     <span class="font-medium text-muted-foreground">Storage:</span>
                     <span class="font-semibold ml-2">{info.storage}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t">
+              <div class="flex items-start gap-3">
+                <BoxIcon class="size-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm">
+                    <span class="font-medium text-muted-foreground">App Version:</span>
+                    <span class="font-semibold ml-2">v{info.app_version}</span>
                   </p>
                 </div>
               </div>

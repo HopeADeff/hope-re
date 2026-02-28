@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.8] - 2026-03-01
+
+### Performance
+
+- Replace `System::new_all()` + `refresh_all()` with targeted `System::new()` + `refresh_cpu_all()` in CPU info gathering, avoiding unnecessary disk/memory/network enumeration
+- Replace `System::new_all()` + `refresh_all()` with targeted `System::new()` + `refresh_memory()` in memory info gathering for the same reason
+- Enable ONNX Runtime `GraphOptimizationLevel::Level3` for maximum model graph optimization during session creation
+- Reduce perceptual loss computation from two separate accumulator loops to a single `(diff_plus^2 - diff_minus^2)` difference accumulator, halving per-element work
+- Replace division-by-3 in edge weight grayscale conversion with multiplication by `1.0 / 3.0` for faster FP math
+- Use iterator-based `fold` for min/max edge weight computation instead of manual branching loop
+- Pre-compute row offsets in edge weight Sobel filter to eliminate repeated `y * w` multiplications
+- Reduce SPSA progress event emission frequency from every 10 to every 20 iterations to lower IPC overhead
+- Replace `Vec::clone()` with `Vec::to_vec()` for SPSA plus/minus tile construction to clarify intent
+
+### Features
+
+- Add app version display to system info dialog, showing current version from `CARGO_PKG_VERSION` alongside platform, CPU, GPU, memory, and storage details
+
+### Changed
+
+- Align noise algorithm parameters to exact training values: epsilon=0.06, iterations=200, alpha_multiplier=2.5, perceptual_weight=0.5
+- Align glaze algorithm parameters to exact training values: epsilon=0.035, iterations=300, alpha_multiplier=2.0, perceptual_weight=1.0
+- Align nightshade algorithm parameters to exact training values: epsilon=0.03, iterations=500, alpha_multiplier=2.5, perceptual_weight=1.5
+- Restore SPSA decay exponents to standard values (gamma=0.101, alpha=0.602) matching optimization literature
+- Restore SPSA momentum beta to 0.9 and perturbation probe size (`ck_initial`) to `epsilon * 0.1` for stable convergence
+
 ## [2.0.77] - 2026-02-28
 
 ### Performance
@@ -280,6 +306,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.0.8]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.77...v2.0.8
 [2.0.77]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.76...v2.0.77
 [2.0.76]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.75...v2.0.76
 [2.0.75]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.7...v2.0.75

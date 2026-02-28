@@ -127,28 +127,28 @@ pub fn spsa_pgd_on_tile(
             }
 
             let p_loss_diff = if perceptual_weight > 0.0 {
-                let mut p_loss_plus = 0.0f32;
-                let mut p_loss_minus = 0.0f32;
+                let inv_n = 1.0 / num_elements as f32;
+                let mut p_diff_accum = 0.0f32;
                 for i in 0..num_elements {
                     let diff_plus = plus_data[i] - base_flat[i];
                     let diff_minus = minus_data[i] - base_flat[i];
                     let inv_edge = 1.5 - edge_flat[i];
-                    p_loss_plus += diff_plus * diff_plus * inv_edge;
-                    p_loss_minus += diff_minus * diff_minus * inv_edge;
+                    p_diff_accum += (diff_plus * diff_plus - diff_minus * diff_minus) * inv_edge;
                 }
-                let inv_n = 1.0 / num_elements as f32;
-                perceptual_weight * (p_loss_plus - p_loss_minus) * inv_n * 100.0
+                perceptual_weight * p_diff_accum * inv_n * 100.0
             } else {
                 0.0
             };
 
             let plus_tile =
-                Array::from_shape_vec((shape[0], shape[1], shape[2], shape[3]), plus_data.clone())
+                Array::from_shape_vec((shape[0], shape[1], shape[2], shape[3]), plus_data.to_vec())
                     .unwrap_or_else(|_| base_tile.clone());
 
-            let minus_tile =
-                Array::from_shape_vec((shape[0], shape[1], shape[2], shape[3]), minus_data.clone())
-                    .unwrap_or_else(|_| base_tile.clone());
+            let minus_tile = Array::from_shape_vec(
+                (shape[0], shape[1], shape[2], shape[3]),
+                minus_data.to_vec(),
+            )
+            .unwrap_or_else(|_| base_tile.clone());
 
             let loss_plus = match run_model(session, &plus_tile) {
                 Ok(v) => v,
@@ -209,7 +209,7 @@ pub fn spsa_pgd_on_tile(
             log::info!("PGD iteration {}/{}", k, iterations);
         }
 
-        if iterations > 0 && k % 10 == 0 {
+        if iterations > 0 && k % 20 == 0 {
             let tile_frac = if progress.tile_total > 0 {
                 (progress.tile_current - 1) as f64 / progress.tile_total as f64
             } else {
