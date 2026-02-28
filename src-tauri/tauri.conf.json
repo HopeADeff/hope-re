@@ -38,7 +38,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEQxRjE4QTI3NEM0NUE2NEIKUldSTHBrVk1KNHJ4MGF3dVpkVXkyR0x0dG1QQ29seEhhUVUxQmkvNDdUaU4zSGFRRHlGZmxmSFgK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDJBNDlCRkE4ODA2MzNDMEQKUldRTlBHT0FxTDlKS3BkQXVLVlB4clRwTS9rME9wUnoybnR4Nnl5S2hiYXBKNUhvSjBRV1YvYWQK",
       "endpoints": [
         "https://github.com/HopeADeff/hope-re/releases/latest/download/latest.json"
       ]
