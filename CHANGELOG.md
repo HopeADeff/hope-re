@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.75] - 2026-02-28
+
+### Fixed
+
+- Refactored `spsa_pgd_on_tile` function to reduce parameters from 9 to 7 by grouping progress-related parameters into a new `TileProgress` struct
+- Fixed incorrect newline styles in Rust source files using `cargo fmt`
+
 ## [2.0.7] - 2026-02-28
 
 ### Features
@@ -226,6 +233,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.0.75]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.7...v2.0.75
 [2.0.7]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.44...v2.0.7
 [2.0.44]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.42...v2.0.44
 [2.0.42]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.41...v2.0.42
