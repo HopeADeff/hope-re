@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Rotate updater signing keypair and update public key in Tauri config to fix incorrect private key password error during builds
 - Add `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` to publish workflow for signing updater artifacts
 - Add `updaterJsonPreferNsis` to publish workflow for Windows NSIS installer preference in `latest.json`
 - Add `updater:default` and `process:allow-restart` permissions to Tauri capabilities
