@@ -4,6 +4,53 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.0.77] - 2026-02-28
+
+### Performance
+
+- Pre-allocate SPSA buffers (`direction`, `plus_data`, `minus_data`, `grad_estimate`) once outside the iteration loop instead of allocating 150,528-element vectors every iteration
+- Add momentum (beta=0.9) to SPSA gradient descent for faster convergence with fewer iterations, replacing raw sign-based PGD
+- Eliminate f32-to-u8-to-f32 roundtrip in tile blending by reading protected tile values directly from the Array4 instead of converting through `tile_to_pixels` intermediate buffer
+- Skip bilinear interpolation in tile blending when tile dimensions match TILE_SIZE (224x224), avoiding unnecessary per-pixel math for full-size tiles
+- Simplify SPSA edge weight expansion from triple-expand `[ew, ew, ew]` + flatten pattern to direct per-channel assignment, eliminating intermediate `Vec<[f32; 3]>` allocation
+- Extract shared `create_image_tensor()` helper in algorithms module to deduplicate tensor creation across noise, glaze, and nightshade model runners
+- Pre-allocate base64 encoding output buffer with estimated capacity based on pixel count and quality setting
+- Increase `alpha_multiplier` from 2.5 to 3.5 (noise, nightshade) and 2.0 to 3.0 (glaze) for stronger per-iteration perturbation impact
+- Simplify SPSA gradient computation from `diff / (2.0 * ck * direction[i])` to `diff_over_2ck * direction[i]` by factoring out the constant divisor
+
+### Features
+
+- Add manual update check button to header alongside system info and theme toggle
+- Show toast notification when manually checking for updates and already on latest version
+
+### Changed
+
+- Redesign update dialog to match Zen aesthetic with `CircleArrowUpIcon`, version subtitle, "What's new" label, monospace progress percentage, and cleaner button labels
+- Convert `useUpdater()` composable from per-instance state to module-level singleton so header button and dialog share update lifecycle state
+- Add `dialogOpen` and `openDialog()` to updater composable for manual dialog trigger support
+- Move `seeded_rand` function from `spsa.rs` to `encoding.rs` where it is actually used, removing dead export from SPSA module
+- Inline `load_session_cpu_only` into `load_model` in model.rs, removing unnecessary private function indirection
+- Remove unused `tile_to_pixels` function and `Rgba` import from preprocessing module
+- Group tile blend parameters into `TileRegion` struct to satisfy clippy `too_many_arguments` lint
+
+## [2.0.76] - 2026-02-28
+
+### Fixed
+
+- Fix `STATUS_ACCESS_VIOLATION` crash during ONNX model inference caused by DirectML execution provider failing to handle jax2onnx-exported ops, segfaulting on partial node assignment
+- Fix ONNX input name mismatch where jax2onnx auto-generated names (`in_0`, `in_1`) did not match hardcoded names (`input`, `style_index`, `target_index`) by switching to positional `ort::inputs!` macro arguments
+- Fix `TensorRef` (borrowed) and `Tensor` (owned) mixed ownership in `ort::inputs!` macro causing undefined memory access with GPU execution providers
+- Fix ndarray version mismatch between project (`ndarray 0.16`) and `ort` crate (`ndarray 0.17`) by constructing tensors via `(shape, Box<[T]>)` tuple form instead of passing `Array4` directly
+- Fix nightshade algorithm stuck at 0% progress due to CPU inference being ~100x slower than GPU, making SPSA loop take 10-40 minutes per tile before any progress event emitted
+
+### Changed
+
+- Load ONNX models with CPU-only execution provider instead of DirectML/CUDA to prevent segfaults from unsupported GPU ops
+- Reduce `SPSA_DIRECTIONS_PER_ITER` from 16 to 4 for feasible CPU inference times while maintaining gradient estimation quality
+- Reduce noise `max_iterations` from 250 to 50, glaze from 350 to 60, nightshade from 500 to 75 to target ~1-2 minutes per tile on CPU
+- Remove unused `array4_to_tensor_ref` function and `TensorRef` import from preprocessing module
+- Add `rename_model_inputs()` function to ONNX export notebook to rename jax2onnx auto-generated input names to proper names for future model exports
+
 ## [2.0.75] - 2026-02-28
 
 ### Fixed
@@ -233,6 +280,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.0.77]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.76...v2.0.77
+[2.0.76]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.75...v2.0.76
 [2.0.75]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.7...v2.0.75
 [2.0.7]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.44...v2.0.7
 [2.0.44]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.42...v2.0.44

@@ -45,17 +45,32 @@ impl Xoshiro128 {
     }
 }
 
-fn generate_spsa_direction(num_elements: usize, rng: &mut Xoshiro128) -> Vec<f32> {
-    (0..num_elements)
-        .map(|_| if rng.next_bool() { 1.0 } else { -1.0 })
-        .collect()
+fn fill_spsa_direction(buf: &mut [f32], rng: &mut Xoshiro128) {
+    for v in buf.iter_mut() {
+        *v = if rng.next_bool() { 1.0 } else { -1.0 };
+    }
 }
 
-pub fn seeded_rand(seed: u32) -> f32 {
-    let mut state = seed;
-    state = state.wrapping_mul(1103515245).wrapping_add(12345);
-    ((state >> 16) & 0x7fff) as f32 / 32768.0
+fn expand_edge_weights(edge_weights: &[f32], num_elements: usize) -> Vec<f32> {
+    let tile_pixels = (TILE_SIZE * TILE_SIZE) as usize;
+    let mut edge_flat = vec![1.0f32; num_elements];
+    for i in 0..tile_pixels {
+        let ew = if i < edge_weights.len() {
+            edge_weights[i]
+        } else {
+            1.0
+        };
+        let base = i * 3;
+        if base + 2 < num_elements {
+            edge_flat[base] = ew;
+            edge_flat[base + 1] = ew;
+            edge_flat[base + 2] = ew;
+        }
+    }
+    edge_flat
 }
+
+const MOMENTUM_BETA: f32 = 0.9;
 
 pub fn spsa_pgd_on_tile(
     session: &mut Session,
@@ -74,22 +89,7 @@ pub fn spsa_pgd_on_tile(
     let ck_initial = epsilon * 0.1;
     let perceptual_weight = params.perceptual_weight;
 
-    let tile_pixels = (TILE_SIZE * TILE_SIZE) as usize;
-    let per_pixel_edge: Vec<[f32; 3]> = (0..tile_pixels)
-        .map(|i| {
-            let ew = if i < edge_weights.len() {
-                edge_weights[i]
-            } else {
-                1.0
-            };
-            [ew, ew, ew]
-        })
-        .collect();
-    let edge_flat: Vec<f32> = per_pixel_edge
-        .iter()
-        .flat_map(|e| e.iter().copied())
-        .collect();
-
+    let edge_flat = expand_edge_weights(edge_weights, num_elements);
     let base_flat: Vec<f32> = base_tile.iter().copied().collect();
 
     let global_seed = std::time::SystemTime::now()
@@ -98,6 +98,12 @@ pub fn spsa_pgd_on_tile(
         .as_nanos() as u64;
     let mut rng = Xoshiro128::new(global_seed);
 
+    let mut direction = vec![0.0f32; num_elements];
+    let mut plus_data = vec![0.0f32; num_elements];
+    let mut minus_data = vec![0.0f32; num_elements];
+    let mut grad_estimate = vec![0.0f32; num_elements];
+    let mut momentum = vec![0.0f32; num_elements];
+
     let mut consecutive_failures = 0u32;
     let max_consecutive_failures = 5u32;
 
@@ -105,27 +111,20 @@ pub fn spsa_pgd_on_tile(
         let ck = ck_initial / ((k + 1) as f32).powf(0.101);
         let ak = alpha / ((k + 1) as f32).powf(0.602);
 
-        let mut grad_estimate = vec![0.0f32; num_elements];
+        for v in grad_estimate.iter_mut() {
+            *v = 0.0;
+        }
         let mut valid_directions = 0u32;
 
         for _d in 0..SPSA_DIRECTIONS_PER_ITER {
-            let direction = generate_spsa_direction(num_elements, &mut rng);
+            fill_spsa_direction(&mut direction, &mut rng);
 
-            let plus_data: Vec<f32> = (0..num_elements)
-                .map(|i| {
-                    let base_val = base_flat[i] + perturbation[i];
-                    let delta = ck * direction[i];
-                    (base_val + delta).clamp(0.0, 1.0)
-                })
-                .collect();
-
-            let minus_data: Vec<f32> = (0..num_elements)
-                .map(|i| {
-                    let base_val = base_flat[i] + perturbation[i];
-                    let delta = ck * direction[i];
-                    (base_val - delta).clamp(0.0, 1.0)
-                })
-                .collect();
+            for i in 0..num_elements {
+                let base_val = base_flat[i] + perturbation[i];
+                let delta = ck * direction[i];
+                plus_data[i] = (base_val + delta).clamp(0.0, 1.0);
+                minus_data[i] = (base_val - delta).clamp(0.0, 1.0);
+            }
 
             let p_loss_diff = if perceptual_weight > 0.0 {
                 let mut p_loss_plus = 0.0f32;
@@ -137,19 +136,18 @@ pub fn spsa_pgd_on_tile(
                     p_loss_plus += diff_plus * diff_plus * inv_edge;
                     p_loss_minus += diff_minus * diff_minus * inv_edge;
                 }
-                p_loss_plus /= num_elements as f32;
-                p_loss_minus /= num_elements as f32;
-                perceptual_weight * (p_loss_plus - p_loss_minus) * 100.0
+                let inv_n = 1.0 / num_elements as f32;
+                perceptual_weight * (p_loss_plus - p_loss_minus) * inv_n * 100.0
             } else {
                 0.0
             };
 
             let plus_tile =
-                Array::from_shape_vec((shape[0], shape[1], shape[2], shape[3]), plus_data)
+                Array::from_shape_vec((shape[0], shape[1], shape[2], shape[3]), plus_data.clone())
                     .unwrap_or_else(|_| base_tile.clone());
 
             let minus_tile =
-                Array::from_shape_vec((shape[0], shape[1], shape[2], shape[3]), minus_data)
+                Array::from_shape_vec((shape[0], shape[1], shape[2], shape[3]), minus_data.clone())
                     .unwrap_or_else(|_| base_tile.clone());
 
             let loss_plus = match run_model(session, &plus_tile) {
@@ -184,9 +182,9 @@ pub fn spsa_pgd_on_tile(
             consecutive_failures = 0;
             valid_directions += 1;
 
-            let diff = (loss_plus - loss_minus) + p_loss_diff;
+            let diff_over_2ck = (loss_plus - loss_minus + p_loss_diff) / (2.0 * ck);
             for i in 0..num_elements {
-                grad_estimate[i] += diff / (2.0 * ck * direction[i]);
+                grad_estimate[i] += diff_over_2ck * direction[i];
             }
         }
 
@@ -194,9 +192,10 @@ pub fn spsa_pgd_on_tile(
             let scale = 1.0 / valid_directions as f32;
             for i in 0..num_elements {
                 let weighted_grad = grad_estimate[i] * scale * edge_flat[i];
-                let sign = if weighted_grad > 0.0 {
+                momentum[i] = MOMENTUM_BETA * momentum[i] + (1.0 - MOMENTUM_BETA) * weighted_grad;
+                let sign = if momentum[i] > 0.0 {
                     1.0
-                } else if weighted_grad < 0.0 {
+                } else if momentum[i] < 0.0 {
                     -1.0
                 } else {
                     0.0

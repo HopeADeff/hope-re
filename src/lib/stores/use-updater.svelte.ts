@@ -1,56 +1,60 @@
-import type { Update } from "@tauri-apps/plugin-updater";
-
+import { useQueryClient } from "@tanstack/svelte-query";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { check } from "@tauri-apps/plugin-updater";
+import { useCheckForUpdate } from "$lib/queries";
 import { toast } from "svelte-sonner";
 
-type UpdateStatus = "idle" | "checking" | "available" | "downloading" | "installing" | "error";
+let dialogOpen = $state<boolean>(false);
+let downloadProgress = $state<number>(0);
+let contentLength = $state<number>(0);
+let downloadStatus = $state<"idle" | "downloading" | "installing" | "error">("idle");
+let downloadError = $state<string | null>(null);
 
 export function useUpdater() {
-  let status = $state<UpdateStatus>("idle");
-  let update = $state<Update | null>(null);
-  let downloadProgress = $state<number>(0);
-  let contentLength = $state<number>(0);
-  let error = $state<string | null>(null);
+  const checkQuery = useCheckForUpdate();
+  const queryClient = useQueryClient();
 
-  const isUpdateAvailable = $derived(status === "available");
-  const isDownloading = $derived(status === "downloading");
-  const isInstalling = $derived(status === "installing");
-  const isChecking = $derived(status === "checking");
+  const update = $derived(checkQuery.data ?? null);
+  const isUpdateAvailable = $derived(!!update);
+  const isChecking = $derived(checkQuery.isFetching);
+  const isDownloading = $derived(downloadStatus === "downloading");
+  const isInstalling = $derived(downloadStatus === "installing");
   const version = $derived(update?.version ?? null);
   const releaseNotes = $derived(update?.body ?? null);
+  const error = $derived(downloadError ?? (checkQuery.isError ? String(checkQuery.error) : null));
 
-  async function checkForUpdate() {
-    if (status === "checking" || status === "downloading" || status === "installing")
+  async function checkForUpdate(manual = false) {
+    if (downloadStatus === "downloading" || downloadStatus === "installing")
       return;
 
-    status = "checking";
-    error = null;
-
     try {
-      const result = await check();
+      const result = await queryClient.fetchQuery({
+        queryKey: ["updater-check"],
+        staleTime: 0,
+      });
+
       if (result) {
-        update = result;
-        status = "available";
+        dialogOpen = true;
       }
-      else {
-        status = "idle";
+      else if (manual) {
+        toast.info("You are on the latest version");
       }
     }
     catch (e) {
-      error = e instanceof Error ? e.message : String(e);
-      status = "error";
+      if (manual) {
+        toast.error("Failed to check for updates");
+      }
       console.error("Update check failed:", e);
     }
   }
 
   async function downloadAndInstall() {
-    if (!update || status === "downloading" || status === "installing")
+    if (!update || downloadStatus === "downloading" || downloadStatus === "installing")
       return;
 
-    status = "downloading";
+    downloadStatus = "downloading";
     downloadProgress = 0;
     contentLength = 0;
+    downloadError = null;
     let downloaded = 0;
 
     try {
@@ -71,29 +75,36 @@ export function useUpdater() {
         }
       });
 
-      status = "installing";
+      downloadStatus = "installing";
       toast.success("Update installed, restarting...");
       await relaunch();
     }
     catch (e) {
-      error = e instanceof Error ? e.message : String(e);
-      status = "error";
+      downloadError = e instanceof Error ? e.message : String(e);
+      downloadStatus = "error";
       toast.error("Update failed");
       console.error("Update download/install failed:", e);
     }
   }
 
   function dismiss() {
-    if (status === "available") {
-      status = "idle";
-      update = null;
+    dialogOpen = false;
+    if (downloadStatus === "error") {
+      downloadStatus = "idle";
+      downloadError = null;
+    }
+  }
+
+  function openDialog() {
+    if (isUpdateAvailable) {
+      dialogOpen = true;
+    }
+    else {
+      checkForUpdate(true);
     }
   }
 
   return {
-    get status() {
-      return status;
-    },
     get isUpdateAvailable() {
       return isUpdateAvailable;
     },
@@ -118,8 +129,12 @@ export function useUpdater() {
     get error() {
       return error;
     },
+    get dialogOpen() {
+      return dialogOpen;
+    },
     checkForUpdate,
     downloadAndInstall,
     dismiss,
+    openDialog,
   };
 }

@@ -1,6 +1,10 @@
 use image::{DynamicImage, Rgba};
 
-use super::spsa::seeded_rand;
+fn seeded_rand(seed: u32) -> f32 {
+    let mut state = seed;
+    state = state.wrapping_mul(1103515245).wrapping_add(12345);
+    ((state >> 16) & 0x7fff) as f32 / 32768.0
+}
 
 pub fn apply_fallback_noise(
     img: &DynamicImage,
@@ -64,7 +68,13 @@ pub fn apply_fallback_noise(
 }
 
 pub fn encode_image_to_base64(img: &DynamicImage, quality: u8) -> Result<String, String> {
-    let mut output = std::io::Cursor::new(Vec::new());
+    let pixel_count = (img.width() * img.height()) as usize;
+    let estimated_size = if quality < 100 {
+        pixel_count / 4
+    } else {
+        pixel_count * 3
+    };
+    let mut output = std::io::Cursor::new(Vec::with_capacity(estimated_size));
 
     if quality < 100 {
         let encoder = image::codecs::jpeg::JpegEncoder::new_with_quality(&mut output, quality);
