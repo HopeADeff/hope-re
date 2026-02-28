@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ArrowUpCircleIcon, LoaderCircleIcon } from "@lucide/svelte";
+  import { CircleArrowUpIcon, LoaderCircleIcon } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
   import { Progress } from "$lib/components/ui/progress";
@@ -27,7 +27,7 @@
     <Dialog.Header>
       <div class="flex items-center gap-3">
         <div class="p-2 rounded-lg bg-primary/10">
-          <ArrowUpCircleIcon class="size-4" />
+          <CircleArrowUpIcon class="size-4" />
         </div>
         <div>
           <Dialog.DialogTitle class="text-lg font-bold">
@@ -86,7 +86,7 @@
           onclick={() => updater.downloadAndInstall()}
           class="gap-2"
         >
-          <ArrowUpCircleIcon class="size-3.5" />
+          <CircleArrowUpIcon class="size-3.5" />
           Update
         </Button>
       {/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ArrowUpCircleIcon, LoaderCircleIcon } from "@lucide/svelte";
+  import { CircleArrowUpIcon, LoaderCircleIcon } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button";
   import { useUpdater } from "$lib/stores/use-updater.svelte";
   import { cn } from "$lib/utils";
@@ -21,6 +21,6 @@
   {#if updater.isChecking}
     <LoaderCircleIcon class="size-4 animate-spin" />
   {:else}
-    <ArrowUpCircleIcon class={cn("size-4", updater.isUpdateAvailable && "text-primary")} />
+    <CircleArrowUpIcon class={cn("size-4", updater.isUpdateAvailable && "text-primary")} />
   {/if}
 </Button>

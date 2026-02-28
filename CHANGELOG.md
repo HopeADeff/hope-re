@@ -25,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- Redesign update dialog to match Zen aesthetic with `ArrowUpCircleIcon`, version subtitle, "What's new" label, monospace progress percentage, and cleaner button labels
+- Redesign update dialog to match Zen aesthetic with `CircleArrowUpIcon`, version subtitle, "What's new" label, monospace progress percentage, and cleaner button labels
 - Convert `useUpdater()` composable from per-instance state to module-level singleton so header button and dialog share update lifecycle state
 - Add `dialogOpen` and `openDialog()` to updater composable for manual dialog trigger support
 - Move `seeded_rand` function from `spsa.rs` to `encoding.rs` where it is actually used, removing dead export from SPSA module
