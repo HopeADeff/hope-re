@@ -2,9 +2,9 @@
 name = "hope-ad"
 version = "2.0.7"
 description = "An AI-proofing arts app"
-authors = [ "HopeADeff" ]
+authors = [ "HopeArtOrg" ]
 license = "MIT"
-repository = "https://github.com/HopeADeff/hope-re"
+repository = "https://github.com/HopeArtOrg/hope-re"
 edition = "2021"
 rust-version = "1.93.1"
 

@@ -3,6 +3,7 @@
     LoaderCircleIcon,
     RotateCcwIcon,
     ShieldIcon,
+    TriangleAlertIcon,
     XIcon,
   } from "@lucide/svelte";
   import {
@@ -75,6 +76,13 @@
     <div class="flex flex-col gap-6 h-full">
       {#if isMobile}
         <div class="flex flex-col gap-4 flex-1 min-h-0">
+          {#if protection.hasResult && !protection.modelUsed}
+            <div class="flex items-center gap-2 p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 text-sm text-amber-600 dark:text-amber-400">
+              <TriangleAlertIcon class="size-4 shrink-0" />
+              <span>Protected with basic fallback. AI models were not loaded. Download models in settings for effective protection.</span>
+            </div>
+          {/if}
+
           {#if protection.resultImage}
             <BaseImagePlaceholder imageSrc={protection.resultImage}
                                   label="Protected Image"
@@ -89,6 +97,13 @@
           {/if}
         </div>
       {:else}
+        {#if protection.hasResult && !protection.modelUsed}
+          <div class="flex items-center gap-2 p-3 rounded-lg border border-amber-500/30 bg-amber-500/10 text-sm text-amber-600 dark:text-amber-400">
+            <TriangleAlertIcon class="size-4 shrink-0" />
+            <span>Protected with basic fallback. AI models were not loaded. Download models in settings for effective protection.</span>
+          </div>
+        {/if}
+
         <div class="grid grid-cols-2 gap-6 flex-1">
           <BaseImagePlaceholder imageSrc={image.originalImage}
                                 label="Original Image"

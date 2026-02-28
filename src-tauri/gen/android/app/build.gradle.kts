@@ -15,10 +15,10 @@ val tauriProperties = Properties().apply {
 
 android {
     compileSdk = 36
-    namespace = "com.HopeADeff.hope_re"
+    namespace = "com.HopeArtOrg.hope_re"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
-        applicationId = "com.HopeADeff.hope_re"
+        applicationId = "com.HopeArtOrg.hope_re"
         minSdk = 24
         targetSdk = 36
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()

@@ -30,6 +30,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Fix ONNX inference errors silently treated as `0.0` loss corrupting gradient estimates; add consecutive failure counter with 5-failure abort threshold
 - Fix gradient averaging dividing by total directions instead of only successful directions, under-weighting gradients when some ONNX inferences fail
 - Fix GELU activation mismatch in ONNX export notebook using `jax.nn.gelu(x, approximate=True)` instead of `nn.gelu(x)` matching training notebooks
+- Fix ONNX models not bundled in desktop production builds because `resources` array in `tauri.conf.json` was empty, causing silent fallback to basic random noise instead of CLIP-guided adversarial perturbation
+- Fix SPSA optimization producing weak perturbations due to low default intensity (20/100, epsilon=0.024) being 40% of training baseline (epsilon=0.06); raise default to 50/100 to match training
+- Fix SPSA optimization under-converging due to low default render quality (50%) halving iteration count; raise default to 75%
 
 ### Changed
 
@@ -39,6 +42,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Add `createUpdaterArtifacts` to bundle config and updater plugin config with public key and GitHub Releases endpoint
 - Add `perceptual_weight` field to `AlgorithmParams` struct with per-algorithm defaults (noise: 0.5, glaze: 1.0, nightshade: 1.5)
 - Pass edge weight map from `tiling.rs` through to `spsa_pgd_on_tile()` for per-tile edge-aware optimization
+- Bundle ONNX models in desktop builds via `"resources": ["../src-models/models/*.onnx"]` in `tauri.conf.json`
+- Raise default intensity slider from 20 to 50 and default render quality from 50 to 75 in `use-protection.svelte.ts`
+- Add prominent amber warning banner on the main page when protection completes with fallback (model not loaded)
+- Expose `modelUsed` and `resultMessage` from `useProtection()` composable for downstream UI consumption
 
 ## [2.0.44] - 2026-02-28
 

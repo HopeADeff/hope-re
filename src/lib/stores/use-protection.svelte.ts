@@ -29,9 +29,9 @@ const DEFAULTS: ProtectionState = {
   algorithm: "noise",
   glazeStyle: "abstract",
   nightshadeTarget: "dog",
-  intensity: [20],
+  intensity: [50],
   outputQuality: [92],
-  renderQuality: [50],
+  renderQuality: [75],
 };
 
 const SUCCESS_RESET_MS = 3000;
@@ -56,6 +56,8 @@ export function useProtection() {
   const isProcessing = $derived(mutation.isPending);
   const resultImage = $derived(mutation.data?.image_base64 ?? null);
   const hasResult = $derived(mutation.isSuccess && !!mutation.data?.image_base64);
+  const modelUsed = $derived(mutation.data?.model_used ?? true);
+  const resultMessage = $derived(mutation.data?.message ?? "");
 
   function stageMessage(stage: string): string {
     switch (stage) {
@@ -228,6 +230,12 @@ export function useProtection() {
     },
     get hasResult() {
       return hasResult;
+    },
+    get modelUsed() {
+      return modelUsed;
+    },
+    get resultMessage() {
+      return resultMessage;
     },
     handleProtect,
     resetSettings,
