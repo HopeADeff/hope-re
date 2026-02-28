@@ -22,10 +22,21 @@ pub struct ProtectionResult {
     pub image_base64: String,
     pub success: bool,
     pub message: String,
+    pub model_used: bool,
 }
 
 pub struct AlgorithmParams {
     pub epsilon: f32,
     pub max_iterations: u32,
     pub alpha_multiplier: f32,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct ProtectionProgress {
+    pub stage: String,
+    pub tile_current: u32,
+    pub tile_total: u32,
+    pub iteration_current: u32,
+    pub iteration_total: u32,
+    pub percent: f64,
 }

@@ -16,6 +16,7 @@ export type ProtectionResult = {
   image_base64: string;
   success: boolean;
   message: string;
+  model_used: boolean;
 };
 
 export type ProtectImageInput = {

@@ -6,6 +6,11 @@ struct GpuDetails {
     vram_mb: Option<u64>,
 }
 
+pub fn has_nvidia_gpu() -> bool {
+    let gpu = detect_gpu();
+    gpu.name.to_uppercase().contains("NVIDIA")
+}
+
 pub fn get_gpu_info() -> String {
     let gpu_details = detect_gpu();
 

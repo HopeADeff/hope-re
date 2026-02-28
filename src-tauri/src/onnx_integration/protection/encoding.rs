@@ -2,34 +2,59 @@ use image::{DynamicImage, Rgba};
 
 use super::spsa::seeded_rand;
 
-pub fn apply_fallback_noise(img: &DynamicImage, intensity: f32, seed: u32) -> DynamicImage {
+pub fn apply_fallback_noise(
+    img: &DynamicImage,
+    intensity: f32,
+    seed: u32,
+    iterations: u32,
+) -> DynamicImage {
     let mut rgba = img.to_rgba8();
     let width = rgba.width();
     let height = rgba.height();
-    let noise_scale = 10u32;
+    let num_pixels = (width * height) as usize;
+    let iterations = iterations.max(1);
+    let epsilon = intensity * 255.0;
+
+    let mut perturbation_r = vec![0.0f32; num_pixels];
+    let mut perturbation_g = vec![0.0f32; num_pixels];
+    let mut perturbation_b = vec![0.0f32; num_pixels];
+
+    for k in 0..iterations {
+        let step_size = epsilon / (1.0 + k as f32 * 0.5);
+        let noise_scale = 4u32 + (k % 8) * 3;
+        let iter_seed = seed.wrapping_add(k.wrapping_mul(7919));
+
+        for y in 0..height {
+            for x in 0..width {
+                let idx = (y * width + x) as usize;
+
+                let bx = x / noise_scale;
+                let by = y / noise_scale;
+                let block_seed = iter_seed
+                    .wrapping_add(bx.wrapping_mul(31))
+                    .wrapping_add(by.wrapping_mul(17));
+
+                let dr = (seeded_rand(block_seed.wrapping_add(1)) - 0.5) * step_size;
+                let dg = (seeded_rand(block_seed.wrapping_add(2)) - 0.5) * step_size;
+                let db = (seeded_rand(block_seed.wrapping_add(3)) - 0.5) * step_size;
+
+                perturbation_r[idx] = (perturbation_r[idx] + dr).clamp(-epsilon, epsilon);
+                perturbation_g[idx] = (perturbation_g[idx] + dg).clamp(-epsilon, epsilon);
+                perturbation_b[idx] = (perturbation_b[idx] + db).clamp(-epsilon, epsilon);
+            }
+        }
+    }
 
     for y in 0..height {
         for x in 0..width {
+            let idx = (y * width + x) as usize;
             let pixel = rgba.get_pixel_mut(x, y);
             let Rgba([r, g, b, a]) = *pixel;
 
-            let nx = x / noise_scale;
-            let ny = y / noise_scale;
-            let block_seed = seed.wrapping_add(nx.wrapping_mul(31).wrapping_add(ny));
-
-            let noise = seeded_rand(block_seed);
-            let noise_strength = intensity * (0.5 + noise * 0.5);
-
-            let n = (
-                (seeded_rand(block_seed.wrapping_add(1)) - 0.5) * noise_strength * 255.0,
-                (seeded_rand(block_seed.wrapping_add(2)) - 0.5) * noise_strength * 255.0,
-                (seeded_rand(block_seed.wrapping_add(3)) - 0.5) * noise_strength * 255.0,
-            );
-
             *pixel = Rgba([
-                (r as f32 + n.0).clamp(0.0, 255.0) as u8,
-                (g as f32 + n.1).clamp(0.0, 255.0) as u8,
-                (b as f32 + n.2).clamp(0.0, 255.0) as u8,
+                (r as f32 + perturbation_r[idx]).clamp(0.0, 255.0) as u8,
+                (g as f32 + perturbation_g[idx]).clamp(0.0, 255.0) as u8,
+                (b as f32 + perturbation_b[idx]).clamp(0.0, 255.0) as u8,
                 a,
             ]);
         }

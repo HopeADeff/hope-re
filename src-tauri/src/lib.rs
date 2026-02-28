@@ -1,5 +1,8 @@
 mod commands;
+#[cfg(not(all(target_os = "android", not(target_arch = "aarch64"))))]
 mod onnx_integration;
+#[cfg(all(target_os = "android", not(target_arch = "aarch64")))]
+mod onnx_stubs;
 mod system_info;
 
 use commands::{

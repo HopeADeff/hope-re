@@ -1,4 +1,6 @@
 use crate::system_info::get_platform_info;
+#[cfg(any(target_os = "windows", target_os = "linux"))]
+use crate::system_info::has_nvidia_gpu;
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct ExecutionProviderInfo {
@@ -17,7 +19,7 @@ pub(super) fn build_execution_providers() -> Vec<ort::ep::ExecutionProviderDispa
 
     let mut eps: Vec<ort::ep::ExecutionProviderDispatch> = Vec::new();
 
-    if CUDA::default().is_available().unwrap_or(false) {
+    if has_nvidia_gpu() && CUDA::default().is_available().unwrap_or(false) {
         eps.push(CUDA::default().build());
     }
     if DirectML::default().is_available().unwrap_or(false) {
@@ -68,7 +70,7 @@ pub(super) fn build_execution_providers() -> Vec<ort::ep::ExecutionProviderDispa
 
     let mut eps: Vec<ort::ep::ExecutionProviderDispatch> = Vec::new();
 
-    if CUDA::default().is_available().unwrap_or(false) {
+    if has_nvidia_gpu() && CUDA::default().is_available().unwrap_or(false) {
         eps.push(CUDA::default().build());
     }
     if XNNPACK::default().is_available().unwrap_or(false) {
@@ -111,7 +113,7 @@ fn get_inference_capabilities_internal() -> InferenceCapabilities {
     {
         use ort::ep::{DirectML, ExecutionProvider, CUDA};
 
-        if CUDA::default().is_available().unwrap_or(false) {
+        if has_nvidia_gpu() && CUDA::default().is_available().unwrap_or(false) {
             providers.push(ExecutionProviderInfo {
                 name: "CUDA".to_string(),
             });
@@ -139,7 +141,7 @@ fn get_inference_capabilities_internal() -> InferenceCapabilities {
     {
         use ort::ep::{ExecutionProvider, CUDA, XNNPACK};
 
-        if CUDA::default().is_available().unwrap_or(false) {
+        if has_nvidia_gpu() && CUDA::default().is_available().unwrap_or(false) {
             providers.push(ExecutionProviderInfo {
                 name: "CUDA".to_string(),
             });

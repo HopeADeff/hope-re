@@ -16,7 +16,10 @@ use algorithms::{
 use encoding::{apply_fallback_noise, encode_image_to_base64};
 use model::{load_model, resolve_model_path};
 use tiling::apply_model_protection;
+use types::ProtectionProgress;
 pub use types::{ProtectionResult, ProtectionSettings};
+
+use tauri::Emitter;
 
 #[tauri::command]
 pub async fn protect_image(
@@ -38,10 +41,22 @@ pub async fn protect_image(
 
     let intensity = settings.intensity;
     let quality = settings.output_quality.clamp(1, 100);
-    let render_q = settings.render_quality.clamp(1, 100);
+    let render_q = settings.render_quality.clamp(0, 100);
     let render_factor = render_q as f32 / 100.0;
 
-    let (protected, message) = match settings.algorithm.as_str() {
+    let _ = app.emit(
+        "protection-progress",
+        ProtectionProgress {
+            stage: "loading".to_string(),
+            tile_current: 0,
+            tile_total: 0,
+            iteration_current: 0,
+            iteration_total: 0,
+            percent: 2.0,
+        },
+    );
+
+    let (protected, message, model_used) = match settings.algorithm.as_str() {
         "noise" => {
             let params = get_noise_params(intensity);
             let iterations = (params.max_iterations as f32 * render_factor).max(1.0) as u32;
@@ -54,26 +69,31 @@ pub async fn protect_image(
                     let mut run = |s: &mut Session, input: &Array4<f32>| -> Result<f32, String> {
                         run_noise_model(s, input)
                     };
-                    let result =
-                        apply_model_protection(&img, &mut session, &params, iterations, &mut run)?;
+                    let result = apply_model_protection(
+                        &img,
+                        &mut session,
+                        &params,
+                        iterations,
+                        &mut run,
+                        &app,
+                    )?;
                     (
                         result,
                         "Noise protection applied with ONNX model".to_string(),
+                        true,
                     )
                 }
                 Err(e) => {
-                    if cfg!(debug_assertions) {
-                        log::warn!("Falling back to simple noise: {}", e);
-                    }
+                    log::warn!("Falling back to simple noise: {}", e);
                     let seed = std::time::SystemTime::now()
                         .duration_since(std::time::UNIX_EPOCH)
                         .unwrap_or_else(|_| std::time::Duration::from_secs(0))
                         .as_secs() as u32;
-                    let effective_intensity = intensity * render_factor;
-                    let result = apply_fallback_noise(&img, effective_intensity, seed);
+                    let result = apply_fallback_noise(&img, intensity, seed, iterations);
                     (
                         result,
                         format!("Noise protection applied with fallback ({})", e),
+                        false,
                     )
                 }
             }
@@ -93,23 +113,29 @@ pub async fn protect_image(
                         move |s: &mut Session, input: &Array4<f32>| -> Result<f32, String> {
                             run_glaze_model(s, input, style_index)
                         };
-                    let result =
-                        apply_model_protection(&img, &mut session, &params, iterations, &mut run)?;
+                    let result = apply_model_protection(
+                        &img,
+                        &mut session,
+                        &params,
+                        iterations,
+                        &mut run,
+                        &app,
+                    )?;
                     (
                         result,
                         format!("Glaze ({}) protection applied with ONNX model", style),
+                        true,
                     )
                 }
                 Err(e) => {
-                    if cfg!(debug_assertions) {
-                        log::warn!("Falling back to simple noise for glaze: {}", e);
-                    }
+                    log::warn!("Falling back to simple noise for glaze: {}", e);
                     let seed = get_glaze_style_index(style) as u32;
-                    let effective_intensity = intensity * 0.8 * render_factor;
-                    let result = apply_fallback_noise(&img, effective_intensity, seed);
+                    let effective_intensity = intensity * 0.8;
+                    let result = apply_fallback_noise(&img, effective_intensity, seed, iterations);
                     (
                         result,
                         format!("Glaze ({}) protection applied with fallback ({})", style, e),
+                        false,
                     )
                 }
             }
@@ -129,26 +155,32 @@ pub async fn protect_image(
                         move |s: &mut Session, input: &Array4<f32>| -> Result<f32, String> {
                             run_nightshade_model(s, input, target_index)
                         };
-                    let result =
-                        apply_model_protection(&img, &mut session, &params, iterations, &mut run)?;
+                    let result = apply_model_protection(
+                        &img,
+                        &mut session,
+                        &params,
+                        iterations,
+                        &mut run,
+                        &app,
+                    )?;
                     (
                         result,
                         format!("Nightshade ({}) protection applied with ONNX model", target),
+                        true,
                     )
                 }
                 Err(e) => {
-                    if cfg!(debug_assertions) {
-                        log::warn!("Falling back to simple noise for nightshade: {}", e);
-                    }
+                    log::warn!("Falling back to simple noise for nightshade: {}", e);
                     let seed = get_nightshade_target_index(target) as u32 + 100;
-                    let effective_intensity = intensity * 1.2 * render_factor;
-                    let result = apply_fallback_noise(&img, effective_intensity, seed);
+                    let effective_intensity = intensity * 1.2;
+                    let result = apply_fallback_noise(&img, effective_intensity, seed, iterations);
                     (
                         result,
                         format!(
                             "Nightshade ({}) protection applied with fallback ({})",
                             target, e
                         ),
+                        false,
                     )
                 }
             }
@@ -156,11 +188,36 @@ pub async fn protect_image(
         _ => return Err(format!("Unknown algorithm: {}", settings.algorithm)),
     };
 
+    let _ = app.emit(
+        "protection-progress",
+        ProtectionProgress {
+            stage: "encoding".to_string(),
+            tile_current: 0,
+            tile_total: 0,
+            iteration_current: 0,
+            iteration_total: 0,
+            percent: 96.0,
+        },
+    );
+
     let image_base64 = encode_image_to_base64(&protected, quality)?;
+
+    let _ = app.emit(
+        "protection-progress",
+        ProtectionProgress {
+            stage: "complete".to_string(),
+            tile_current: 0,
+            tile_total: 0,
+            iteration_current: 0,
+            iteration_total: 0,
+            percent: 100.0,
+        },
+    );
 
     Ok(ProtectionResult {
         image_base64,
         success: true,
         message,
+        model_used,
     })
 }
