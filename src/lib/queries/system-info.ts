@@ -12,6 +12,7 @@ type SystemInfo = {
   memory: string;
   gpu: string;
   storage: string;
+  app_version: string;
 };
 
 export function useSystemInfo() {

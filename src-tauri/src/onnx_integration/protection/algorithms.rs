@@ -6,28 +6,28 @@ use super::types::AlgorithmParams;
 
 pub fn get_noise_params(intensity: f32) -> AlgorithmParams {
     AlgorithmParams {
-        epsilon: intensity * 0.08 / 0.5,
-        max_iterations: 50,
-        alpha_multiplier: 3.5,
-        perceptual_weight: 0.5,
+        epsilon: intensity * 0.16 / 0.5,
+        max_iterations: 80,
+        alpha_multiplier: 5.0,
+        perceptual_weight: 0.3,
     }
 }
 
 pub fn get_glaze_params(intensity: f32) -> AlgorithmParams {
     AlgorithmParams {
-        epsilon: intensity * 0.05 / 0.5,
-        max_iterations: 60,
-        alpha_multiplier: 3.0,
-        perceptual_weight: 1.0,
+        epsilon: intensity * 0.10 / 0.5,
+        max_iterations: 100,
+        alpha_multiplier: 4.5,
+        perceptual_weight: 0.6,
     }
 }
 
 pub fn get_nightshade_params(intensity: f32) -> AlgorithmParams {
     AlgorithmParams {
-        epsilon: intensity * 0.045 / 0.5,
-        max_iterations: 75,
-        alpha_multiplier: 3.5,
-        perceptual_weight: 1.5,
+        epsilon: intensity * 0.12 / 0.5,
+        max_iterations: 120,
+        alpha_multiplier: 5.0,
+        perceptual_weight: 0.8,
     }
 }
 

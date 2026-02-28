@@ -26,46 +26,31 @@ pub fn compute_edge_weight_map(tile: &Array4<f32>) -> Vec<f32> {
     let num_pixels = h * w;
 
     let mut gray = vec![0.0f32; num_pixels];
-    for y in 0..h {
-        for x in 0..w {
-            gray[y * w + x] = (tile[[0, y, x, 0]] + tile[[0, y, x, 1]] + tile[[0, y, x, 2]]) / 3.0;
-        }
+    for (idx, g) in gray.iter_mut().enumerate() {
+        let y = idx / w;
+        let x = idx % w;
+        *g = (tile[[0, y, x, 0]] + tile[[0, y, x, 1]] + tile[[0, y, x, 2]]) * (1.0 / 3.0);
     }
 
     let mut edges = vec![0.0f32; num_pixels];
     for y in 0..h {
+        let row = y * w;
+        let next_row = if y + 1 < h { (y + 1) * w } else { (y - 1) * w };
         for x in 0..w {
-            let gx = if y + 1 < h {
-                (gray[(y + 1) * w + x] - gray[y * w + x]).abs()
-            } else {
-                (gray[y * w + x] - gray[(y - 1) * w + x]).abs()
-            };
-
-            let gy = if x + 1 < w {
-                (gray[y * w + x + 1] - gray[y * w + x]).abs()
-            } else {
-                (gray[y * w + x] - gray[y * w + x - 1]).abs()
-            };
-
-            edges[y * w + x] = (gx * gx + gy * gy).sqrt();
+            let gx = (gray[next_row + x] - gray[row + x]).abs();
+            let next_x = if x + 1 < w { x + 1 } else { x - 1 };
+            let gy = (gray[row + next_x] - gray[row + x]).abs();
+            edges[row + x] = (gx * gx + gy * gy).sqrt();
         }
     }
 
-    let mut min_e = f32::MAX;
-    let mut max_e = f32::MIN;
-    for &e in &edges {
-        if e < min_e {
-            min_e = e;
-        }
-        if e > max_e {
-            max_e = e;
-        }
-    }
-    let range = max_e - min_e + 1e-8;
+    let (min_e, max_e) = edges
+        .iter()
+        .fold((f32::MAX, f32::MIN), |(mn, mx), &e| (mn.min(e), mx.max(e)));
+    let inv_range = 1.0 / (max_e - min_e + 1e-8);
 
     for e in &mut edges {
-        let normalized = (*e - min_e) / range;
-        *e = 0.3 + 0.7 * normalized;
+        *e = 0.3 + 0.7 * (*e - min_e) * inv_range;
     }
 
     edges

@@ -1,8 +1,8 @@
 use sysinfo::System;
 
 pub fn get_cpu_info() -> String {
-    let mut sys = System::new_all();
-    sys.refresh_all();
+    let mut sys = System::new();
+    sys.refresh_cpu_all();
 
     sys.cpus()
         .first()
