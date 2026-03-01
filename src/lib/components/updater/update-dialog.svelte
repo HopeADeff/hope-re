@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CircleArrowUpIcon, LoaderCircleIcon, MinimizeIcon } from "@lucide/svelte";
+  import { CircleArrowUpIcon, LoaderCircleIcon, Minimize2Icon } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
   import { Progress } from "$lib/components/ui/progress";
@@ -37,10 +37,10 @@
     {#if updater.isActive}
       <button
         onclick={() => updater.minimize()}
-        class="absolute inset-s-4 top-4 rounded-lg opacity-50 transition-opacity hover:opacity-100 focus:outline-hidden cursor-pointer"
+        class="absolute end-4 top-4 rounded-lg opacity-50 transition-opacity hover:opacity-100 focus-visible:outline-hidden cursor-pointer"
         aria-label="Minimize to dock"
       >
-        <MinimizeIcon class="size-4" />
+        <Minimize2Icon class="size-4" />
       </button>
     {/if}
 
@@ -95,17 +95,7 @@
     </div>
 
     <Dialog.Footer class="mt-4 shrink-0">
-      {#if updater.isActive}
-        <Button
-          variant="outline"
-          size="sm"
-          onclick={() => updater.minimize()}
-          class="gap-2"
-        >
-          <MinimizeIcon class="size-3.5" />
-          Minimize
-        </Button>
-      {:else if !updater.isDownloading && !updater.isInstalling}
+      {#if !updater.isActive}
         <Button
           variant="outline"
           size="sm"

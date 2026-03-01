@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
 
-  import { DownloadIcon, LoaderCircleIcon, MinimizeIcon, TriangleAlertIcon } from "@lucide/svelte";
+  import { DownloadIcon, LoaderCircleIcon, Minimize2Icon, TriangleAlertIcon } from "@lucide/svelte";
   import { Badge } from "$lib/components/ui/badge";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
@@ -64,18 +64,17 @@
     onInteractOutside={handleInteractOutside}
     onEscapeKeydown={handleEscapeKeydown}
   >
+    {#if models.isDownloading}
+      <button
+        onclick={() => models.minimize()}
+        class="absolute end-4 top-4 rounded-lg opacity-50 transition-opacity hover:opacity-100 focus-visible:outline-hidden cursor-pointer"
+        aria-label="Minimize to dock"
+      >
+        <Minimize2Icon class="size-4" />
+      </button>
+    {/if}
     <Dialog.Header>
       <div class="flex flex-col items-center gap-3">
-        {#if models.isDownloading}
-          <button
-            onclick={() => models.minimize()}
-            class="absolute start-4 top-4 rounded-lg opacity-50 transition-opacity hover:opacity-100 focus:outline-hidden cursor-pointer"
-            aria-label="Minimize to dock"
-          >
-            <MinimizeIcon class="size-4" />
-          </button>
-        {/if}
-
         <div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center">
           {#if models.error}
             <TriangleAlertIcon class="size-6 text-destructive" />
