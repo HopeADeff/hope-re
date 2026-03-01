@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.1.2] - 2026-03-01
+
+### Fixed
+
+- Fix window drag, maximize, and close buttons blocked by dialog overlays on Windows because the `fixed inset-0 z-50` overlay covered the custom titlebar drag region
+- Fix model download dialog being completely unclosable and blocking the entire app with no way to interact with the titlebar while downloading
+
+### Features
+
+- Add retractable dialog system for model downloader and updater dialogs with minimize button that collapses active background tasks into floating dock icons at bottom-left
+- Add minimized dock component showing real-time download/update progress with animated activity indicators and click-to-restore behavior
+- Add minimize-on-escape support for model download dialog when download is in progress
+
+### Changed
+
+- Set `data-platform="windows"` on document root to enable platform-specific CSS for dialog overlay offset below the 30px custom titlebar
+- Update updater dialog dismiss behavior to auto-minimize instead of closing when download or install is active
+- Update updater dialog to hide close button and show minimize button during active download/install
+- Update model download store with `minimized`, `needsDialog`, `dialogOpen`, `minimize()`, and `restore()` for retractable dialog support
+- Update updater store with `minimized`, `isActive`, `minimize()`, and `restore()` for retractable dialog support
+
 ## [2.1.1] - 2026-03-01
 
 ### Fixed
@@ -337,6 +358,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.1.2]: https://github.com/HopeArtOrg/hope-re/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/HopeArtOrg/hope-re/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.8...v2.1.0
 [2.0.8]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.77...v2.0.8

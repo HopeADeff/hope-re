@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
 
-  import { DownloadIcon, LoaderCircleIcon, TriangleAlertIcon } from "@lucide/svelte";
+  import { DownloadIcon, LoaderCircleIcon, MinimizeIcon, TriangleAlertIcon } from "@lucide/svelte";
   import { Badge } from "$lib/components/ui/badge";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
@@ -18,8 +18,6 @@
 
   const models = useModelDownload();
   let mounted = $state<boolean>(false);
-
-  const dialogOpen = $derived(models.isLoading || !models.allReady);
 
   onMount(() => {
     mounted = true;
@@ -39,22 +37,45 @@
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${(bytes / k ** i).toFixed(1)} ${sizes[i]}`;
   }
+
+  function handleInteractOutside(e: Event) {
+    if (models.isDownloading) {
+      e.preventDefault();
+    }
+  }
+
+  function handleEscapeKeydown(e: Event) {
+    if (models.isDownloading) {
+      e.preventDefault();
+      models.minimize();
+    }
+  }
 </script>
 
 {@render children()}
 
 <Dialog.Root
-  open={dialogOpen}
+  open={models.dialogOpen}
   onOpenChange={() => {}}
 >
   <Dialog.Content
     class="max-w-md"
     showCloseButton={false}
-    onInteractOutside={e => e.preventDefault()}
-    onEscapeKeydown={e => e.preventDefault()}
+    onInteractOutside={handleInteractOutside}
+    onEscapeKeydown={handleEscapeKeydown}
   >
     <Dialog.Header>
       <div class="flex flex-col items-center gap-3">
+        {#if models.isDownloading}
+          <button
+            onclick={() => models.minimize()}
+            class="absolute start-4 top-4 rounded-lg opacity-50 transition-opacity hover:opacity-100 focus:outline-hidden cursor-pointer"
+            aria-label="Minimize to dock"
+          >
+            <MinimizeIcon class="size-4" />
+          </button>
+        {/if}
+
         <div class="size-12 rounded-lg bg-primary/10 flex items-center justify-center">
           {#if models.error}
             <TriangleAlertIcon class="size-6 text-destructive" />

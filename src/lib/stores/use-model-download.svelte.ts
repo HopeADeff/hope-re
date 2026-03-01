@@ -40,6 +40,7 @@ export function useModelDownload() {
     })),
   );
   let error = $state<string | null>(null);
+  let minimized = $state<boolean>(false);
 
   const allReady = $derived(statusQuery.data?.all_ready ?? false);
   const isLoading = $derived(statusQuery.isLoading);
@@ -54,6 +55,17 @@ export function useModelDownload() {
       ? MODEL_NAMES[currentModelIndex].replace("_algorithm.onnx", "")
       : null,
   );
+
+  const needsDialog = $derived(isLoading || !allReady);
+  const dialogOpen = $derived(needsDialog && !minimized);
+
+  function minimize() {
+    minimized = true;
+  }
+
+  function restore() {
+    minimized = false;
+  }
 
   async function startDownload() {
     if (isDownloading)
@@ -139,6 +151,17 @@ export function useModelDownload() {
     get statusData(): ModelsCheckResult | undefined {
       return statusQuery.data;
     },
+    get minimized() {
+      return minimized;
+    },
+    get needsDialog() {
+      return needsDialog;
+    },
+    get dialogOpen() {
+      return dialogOpen;
+    },
     startDownload,
+    minimize,
+    restore,
   };
 }

@@ -1649,7 +1649,7 @@ checksum = "ec9d92d097f4749b64e8cc33d924d9f40a2d4eb91402b458014b781f5733d60f"
 
 [[package]]
 name = "hope-ad"
-version = "2.1.1"
+version = "2.1.2"
 dependencies = [
  "base64 0.22.1",
  "futures-util",
