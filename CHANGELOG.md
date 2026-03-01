@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.1.4] - 2026-03-01
+
+### Fixed
+
+- Fix minimized dock pill buttons invisible against page background due to `bg-background/95` blending into the page and `border-border/40` having near-zero effective opacity in dark mode
+- Replace near-transparent dock styling with opaque `bg-card` background, full `border-border`, and `ring-1 ring-border/50` outer ring for clear visibility in both light and dark themes
+- Increase icon container background from `bg-primary/10` to `bg-primary/15` for stronger icon presence
+
+### Changed
+
+- Replace `Minimize2Icon` (diagonal shrink arrow) with `MinusIcon` (standard window minimize dash) in model download and updater dialogs for a more recognizable minimize affordance
+
 ## [2.1.3] - 2026-03-01
 
 ### Fixed
@@ -364,6 +376,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.1.4]: https://github.com/HopeArtOrg/hope-re/compare/v2.1.3...v2.1.4
+[2.1.3]: https://github.com/HopeArtOrg/hope-re/compare/v2.1.2...v2.1.3
 [2.1.2]: https://github.com/HopeArtOrg/hope-re/compare/v2.1.1...v2.1.2
 [2.1.1]: https://github.com/HopeArtOrg/hope-re/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.8...v2.1.0

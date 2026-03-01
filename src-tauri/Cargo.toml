@@ -1,6 +1,6 @@
 [package]
 name = "hope-ad"
-version = "2.1.3"
+version = "2.1.4"
 description = "An AI-proofing arts app"
 authors = [ "HopeArtOrg" ]
 license = "MIT"

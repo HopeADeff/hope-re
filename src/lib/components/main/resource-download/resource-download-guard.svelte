@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
 
-  import { DownloadIcon, LoaderCircleIcon, Minimize2Icon, TriangleAlertIcon } from "@lucide/svelte";
+  import { DownloadIcon, LoaderCircleIcon, MinusIcon, TriangleAlertIcon } from "@lucide/svelte";
   import { Badge } from "$lib/components/ui/badge";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
@@ -70,7 +70,7 @@
         class="absolute end-4 top-4 rounded-lg opacity-50 transition-opacity hover:opacity-100 focus-visible:outline-hidden cursor-pointer"
         aria-label="Minimize to dock"
       >
-        <Minimize2Icon class="size-4" />
+        <MinusIcon class="size-4" />
       </button>
     {/if}
     <Dialog.Header>

@@ -13,12 +13,12 @@
   <button
     onclick={() => models.restore()}
     class={cn(
-      "group flex items-center gap-2 px-3 py-2 rounded-lg border bg-background/95 backdrop-blur-sm shadow-lg",
-      "hover:bg-muted/50 transition-all duration-200 cursor-pointer",
-      "border-border/40 hover:border-border",
+      "group flex items-center gap-2 px-3 py-2 rounded-lg border bg-card shadow-lg ring-1 ring-border/50",
+      "hover:bg-accent transition-all duration-200 cursor-pointer",
+      "border-border",
     )}
   >
-    <div class="relative flex items-center justify-center size-7 rounded-md bg-primary/10 shrink-0">
+    <div class="relative flex items-center justify-center size-7 rounded-md bg-primary/15 shrink-0">
       <DownloadIcon class="size-3.5 text-primary" />
       {#if models.isDownloading}
         <span class="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-primary animate-pulse"></span>
@@ -42,12 +42,12 @@
   <button
     onclick={() => updater.restore()}
     class={cn(
-      "group flex items-center gap-2 px-3 py-2 rounded-lg border bg-background/95 backdrop-blur-sm shadow-lg",
-      "hover:bg-muted/50 transition-all duration-200 cursor-pointer",
-      "border-border/40 hover:border-border",
+      "group flex items-center gap-2 px-3 py-2 rounded-lg border bg-card shadow-lg ring-1 ring-border/50",
+      "hover:bg-accent transition-all duration-200 cursor-pointer",
+      "border-border",
     )}
   >
-    <div class="relative flex items-center justify-center size-7 rounded-md bg-primary/10 shrink-0">
+    <div class="relative flex items-center justify-center size-7 rounded-md bg-primary/15 shrink-0">
       <CircleArrowUpIcon class="size-3.5 text-primary" />
       <span class="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-primary animate-pulse"></span>
     </div>
