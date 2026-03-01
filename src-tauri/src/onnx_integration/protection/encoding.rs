@@ -6,6 +6,12 @@ fn seeded_rand(seed: u32) -> f32 {
     ((state >> 16) & 0x7fff) as f32 / 32768.0
 }
 
+fn seeded_rand_pair(seed: u32) -> (f32, f32) {
+    let a = seeded_rand(seed);
+    let b = seeded_rand(seed.wrapping_mul(2654435761));
+    (a, b)
+}
+
 pub fn apply_fallback_noise(
     img: &DynamicImage,
     intensity: f32,
@@ -24,23 +30,42 @@ pub fn apply_fallback_noise(
     let mut perturbation_b = vec![0.0f32; num_pixels];
 
     for k in 0..iterations {
-        let step_size = epsilon / (1.0 + k as f32 * 0.5);
-        let noise_scale = 4u32 + (k % 8) * 3;
+        let step_size = epsilon / (1.0 + k as f32 * 0.3);
         let iter_seed = seed.wrapping_add(k.wrapping_mul(7919));
+
+        let noise_scales: [u32; 3] = [4 + (k % 6) * 2, 8 + (k % 5) * 4, 16 + (k % 4) * 8];
 
         for y in 0..height {
             for x in 0..width {
                 let idx = (y * width + x) as usize;
+                let mut dr = 0.0f32;
+                let mut dg = 0.0f32;
+                let mut db = 0.0f32;
 
-                let bx = x / noise_scale;
-                let by = y / noise_scale;
-                let block_seed = iter_seed
-                    .wrapping_add(bx.wrapping_mul(31))
-                    .wrapping_add(by.wrapping_mul(17));
+                for (si, &scale) in noise_scales.iter().enumerate() {
+                    let bx = x / scale;
+                    let by = y / scale;
+                    let block_seed = iter_seed
+                        .wrapping_add(bx.wrapping_mul(31))
+                        .wrapping_add(by.wrapping_mul(17))
+                        .wrapping_add(si as u32 * 9973);
 
-                let dr = (seeded_rand(block_seed.wrapping_add(1)) - 0.5) * step_size;
-                let dg = (seeded_rand(block_seed.wrapping_add(2)) - 0.5) * step_size;
-                let db = (seeded_rand(block_seed.wrapping_add(3)) - 0.5) * step_size;
+                    let weight = 1.0 / (si as f32 + 1.0);
+                    dr += (seeded_rand(block_seed.wrapping_add(1)) - 0.5) * weight;
+                    dg += (seeded_rand(block_seed.wrapping_add(2)) - 0.5) * weight;
+                    db += (seeded_rand(block_seed.wrapping_add(3)) - 0.5) * weight;
+                }
+
+                let (phase_x, phase_y) = seeded_rand_pair(iter_seed.wrapping_add(k));
+                let freq = (2.0 + (k % 7) as f32) * std::f32::consts::PI * 2.0;
+                let wave = ((x as f32 * freq / width as f32 + phase_x * std::f32::consts::TAU)
+                    .sin()
+                    * (y as f32 * freq / height as f32 + phase_y * std::f32::consts::TAU).cos())
+                    * 0.15;
+
+                dr = (dr + wave) * step_size;
+                dg = (dg + wave * 0.8) * step_size;
+                db = (db + wave * 1.2) * step_size;
 
                 perturbation_r[idx] = (perturbation_r[idx] + dr).clamp(-epsilon, epsilon);
                 perturbation_g[idx] = (perturbation_g[idx] + dg).clamp(-epsilon, epsilon);

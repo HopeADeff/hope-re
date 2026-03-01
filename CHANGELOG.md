@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.1.1] - 2026-03-01
+
+### Fixed
+
+- Fix updater dialog unscrollable in window and window-fullscreen modes when release notes exceed viewport height, making the update button unreachable
+- Fix release notes rendered as plain text instead of parsed markdown, losing all formatting from GitHub release bodies
+
+### Performance
+
+- Eliminate per-direction `Array4` heap allocations in SPSA hot loop by pre-allocating plus/minus tile buffers and writing directly via `as_slice_mut` + `copy_from_slice`
+- Increase `SPSA_DIRECTIONS_PER_ITER` from 4 to 8 for higher-quality gradient estimation producing stronger adversarial perturbations
+- Lower SPSA momentum beta from 0.9 to 0.85 for faster adaptation in short iteration runs
+- Reduce perceptual weight for noise (0.5 to 0.4) and nightshade (1.5 to 1.2) to allow stronger perturbation magnitude relative to perceptual constraint
+
+### Changed
+
+- Add `marked` runtime markdown parser for rendering GitHub release notes as formatted HTML in the updater dialog
+- Add scrollable release notes area with `max-h-[85vh]` viewport constraint and `overflow-y-auto` so dialog content never exceeds screen bounds
+- Add scoped CSS for rendered markdown (headings, lists, code blocks, links, blockquotes) consistent with app design tokens
+- Increase noise algorithm epsilon from 0.06 to 0.08 and iterations from 200 to 250 for stronger concept confusion
+- Increase noise alpha_multiplier from 2.5 to 3.0 for more aggressive per-step perturbation
+- Increase glaze algorithm epsilon from 0.035 to 0.05 and iterations from 300 to 350 for more effective style cloaking
+- Increase glaze alpha_multiplier from 2.0 to 2.5 and reduce perceptual_weight from 1.0 to 0.8 for stronger perturbation
+- Increase nightshade algorithm epsilon from 0.03 to 0.045 and alpha_multiplier from 2.5 to 3.0 for stronger data poisoning
+- Enhance fallback noise with multi-scale frequency-domain patterns (3 octaves + sinusoidal wave) instead of single-scale block noise for better AI confusion
+- Reduce fallback noise step decay from 0.5 to 0.3 for sustained perturbation strength across iterations
+
 ## [2.1.0] - 2026-03-01
 
 ### Fixed
@@ -310,6 +337,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.1.1]: https://github.com/HopeArtOrg/hope-re/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.8...v2.1.0
 [2.0.8]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.77...v2.0.8
 [2.0.77]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.76...v2.0.77

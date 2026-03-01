@@ -70,7 +70,7 @@ fn expand_edge_weights(edge_weights: &[f32], num_elements: usize) -> Vec<f32> {
     edge_flat
 }
 
-const MOMENTUM_BETA: f32 = 0.9;
+const MOMENTUM_BETA: f32 = 0.85;
 
 pub fn spsa_pgd_on_tile(
     session: &mut Session,
@@ -103,6 +103,12 @@ pub fn spsa_pgd_on_tile(
     let mut minus_data = vec![0.0f32; num_elements];
     let mut grad_estimate = vec![0.0f32; num_elements];
     let mut momentum = vec![0.0f32; num_elements];
+
+    let tile_shape = (shape[0], shape[1], shape[2], shape[3]);
+    let mut plus_tile =
+        Array::from_shape_vec(tile_shape, plus_data.clone()).unwrap_or_else(|_| base_tile.clone());
+    let mut minus_tile =
+        Array::from_shape_vec(tile_shape, minus_data.clone()).unwrap_or_else(|_| base_tile.clone());
 
     let mut consecutive_failures = 0u32;
     let max_consecutive_failures = 5u32;
@@ -140,15 +146,11 @@ pub fn spsa_pgd_on_tile(
                 0.0
             };
 
-            let plus_tile =
-                Array::from_shape_vec((shape[0], shape[1], shape[2], shape[3]), plus_data.to_vec())
-                    .unwrap_or_else(|_| base_tile.clone());
+            let plus_slice = plus_tile.as_slice_mut().unwrap();
+            plus_slice.copy_from_slice(&plus_data);
 
-            let minus_tile = Array::from_shape_vec(
-                (shape[0], shape[1], shape[2], shape[3]),
-                minus_data.to_vec(),
-            )
-            .unwrap_or_else(|_| base_tile.clone());
+            let minus_slice = minus_tile.as_slice_mut().unwrap();
+            minus_slice.copy_from_slice(&minus_data);
 
             let loss_plus = match run_model(session, &plus_tile) {
                 Ok(v) => v,

@@ -4,9 +4,16 @@
   import * as Dialog from "$lib/components/ui/dialog";
   import { Progress } from "$lib/components/ui/progress";
   import { useUpdater } from "$lib/stores/use-updater.svelte";
+  import { parseMarkdown } from "$lib/utils";
 
   const updater = useUpdater();
   let hasAutoOpened = false;
+
+  const renderedNotes = $derived.by(() => {
+    if (!updater.releaseNotes)
+      return "";
+    return parseMarkdown(updater.releaseNotes);
+  });
 
   $effect(() => {
     if (updater.isUpdateAvailable && !hasAutoOpened) {
@@ -23,8 +30,8 @@
       updater.dismiss();
   }}
 >
-  <Dialog.Content class="max-w-sm">
-    <Dialog.Header>
+  <Dialog.Content class="max-w-sm max-h-[85vh] flex flex-col overflow-hidden">
+    <Dialog.Header class="shrink-0">
       <div class="flex items-center gap-3">
         <div class="p-2 rounded-lg bg-primary/10">
           <CircleArrowUpIcon class="size-4" />
@@ -40,11 +47,13 @@
       </div>
     </Dialog.Header>
 
-    <div class="mt-4 space-y-4">
-      {#if updater.releaseNotes}
+    <div class="mt-4 space-y-4 min-h-0 flex-1 overflow-y-auto">
+      {#if renderedNotes}
         <div class="rounded-lg border bg-card p-4">
           <p class="text-xs font-medium text-muted-foreground mb-2">What's new</p>
-          <p class="text-sm whitespace-pre-line leading-relaxed">{updater.releaseNotes}</p>
+          <div class="release-notes text-sm leading-relaxed">
+            {@html renderedNotes}
+          </div>
         </div>
       {/if}
 
@@ -72,7 +81,7 @@
       {/if}
     </div>
 
-    <Dialog.Footer class="mt-4">
+    <Dialog.Footer class="mt-4 shrink-0">
       {#if !updater.isDownloading && !updater.isInstalling}
         <Button
           variant="outline"
@@ -93,3 +102,86 @@
     </Dialog.Footer>
   </Dialog.Content>
 </Dialog.Root>
+
+<style>
+  .release-notes :global(h1),
+  .release-notes :global(h2),
+  .release-notes :global(h3) {
+    font-weight: 600;
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+  .release-notes :global(h1) {
+    font-size: 1.125rem;
+  }
+  .release-notes :global(h2) {
+    font-size: 1rem;
+  }
+  .release-notes :global(h3) {
+    font-size: 0.875rem;
+  }
+  .release-notes :global(h1:first-child),
+  .release-notes :global(h2:first-child),
+  .release-notes :global(h3:first-child) {
+    margin-top: 0;
+  }
+  .release-notes :global(p) {
+    margin-bottom: 0.5rem;
+  }
+  .release-notes :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  .release-notes :global(ul),
+  .release-notes :global(ol) {
+    padding-left: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .release-notes :global(ul) {
+    list-style-type: disc;
+  }
+  .release-notes :global(ol) {
+    list-style-type: decimal;
+  }
+  .release-notes :global(li) {
+    margin-bottom: 0.25rem;
+  }
+  .release-notes :global(code) {
+    font-size: 0.8em;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    background-color: var(--muted);
+    font-family: var(--font-jetbrains-mono);
+  }
+  .release-notes :global(pre) {
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    background-color: var(--muted);
+    overflow-x: auto;
+    margin-bottom: 0.5rem;
+  }
+  .release-notes :global(pre code) {
+    padding: 0;
+    background-color: transparent;
+  }
+  .release-notes :global(a) {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .release-notes :global(a:hover) {
+    opacity: 0.8;
+  }
+  .release-notes :global(blockquote) {
+    border-left: 2px solid var(--border);
+    padding-left: 0.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--muted-foreground);
+  }
+  .release-notes :global(hr) {
+    border-color: var(--border);
+    margin: 0.75rem 0;
+  }
+  .release-notes :global(strong) {
+    font-weight: 600;
+  }
+</style>

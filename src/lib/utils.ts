@@ -1,10 +1,15 @@
 import type { ClassValue } from "clsx";
 
 import { clsx } from "clsx";
+import { marked } from "marked";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function parseMarkdown(input: string): string {
+  return marked.parse(input, { async: false }) as string;
 }
 
 export type WithoutChild<T> = T extends { child?: any } ? Omit<T, "child"> : T;
