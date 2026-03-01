@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [2.0.8] - 2026-03-01
+## [2.1.0] - 2026-03-01
+
+### Fixed
+
+- Fix version numbering scheme so auto-updater correctly detects new releases for users on v2.0.77 and earlier (semver: 2.0.77 > 2.0.8, so those users could never update)
 
 ### Performance
 
@@ -306,6 +310,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Update SvelteKit and Svelte packages to avoid CVE from older versions ([#20](https://github.com/HopeArtOrg/hope-re/pull/20))
 
+[2.1.0]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.8...v2.1.0
 [2.0.8]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.77...v2.0.8
 [2.0.77]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.76...v2.0.77
 [2.0.76]: https://github.com/HopeArtOrg/hope-re/compare/v2.0.75...v2.0.76
