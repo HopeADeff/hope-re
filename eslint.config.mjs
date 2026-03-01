@@ -51,4 +51,9 @@ export default antfu({
       },
     ],
   },
+}, {
+  files: ["src/lib/components/updater/update-dialog.svelte"],
+  rules: {
+    "svelte/no-at-html-tags": "off",
+  },
 });

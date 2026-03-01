@@ -1,7 +1,7 @@
 {
   "name": "hope-re",
   "type": "module",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "scripts": {
     "dev": "vite dev",
@@ -27,6 +27,7 @@
     "@tauri-apps/plugin-process": "^2.3.1",
     "@tauri-apps/plugin-store": "~2.4.2",
     "@tauri-apps/plugin-updater": "^2.10.0",
+    "marked": "^17.0.3",
     "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
