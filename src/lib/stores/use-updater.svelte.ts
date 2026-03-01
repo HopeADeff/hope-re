@@ -92,6 +92,7 @@ export function useUpdater() {
   function dismiss() {
     if (isActive) {
       minimized = true;
+      dialogOpen = false;
       return;
     }
     dialogOpen = false;

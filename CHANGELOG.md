@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.1.5] - 2026-03-01
+
+### Fixed
+
+- Fix minimized dock never rendering in the DOM because `useModelDownload()` declared all `$state` variables (`isDownloading`, `modelProgress`, `minimized`, etc.) inside the function body, making each caller get completely independent state; when `ResourceDownloadGuard` set `minimized = true`, the `MinimizedDock` instance still had `minimized = false`
+- Move model download shared state (`isDownloading`, `currentModelIndex`, `modelProgress`, `error`, `minimized`) to module scope so all consumers share the same singleton state, matching the pattern already used by `useUpdater()`
+- Fix updater `dismiss()` not closing the dialog when a download/install is active, leaving both the dialog overlay and the minimized dock competing for attention
+
 ## [2.1.4] - 2026-03-01
 
 ### Fixed

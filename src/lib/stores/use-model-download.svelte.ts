@@ -24,23 +24,23 @@ const MODEL_NAMES = [
   "nightshade_algorithm.onnx",
 ];
 
+let isDownloading = $state<boolean>(false);
+let currentModelIndex = $state<number>(0);
+let modelProgress = $state<ModelProgress[]>(
+  MODEL_NAMES.map(name => ({
+    name,
+    percent: 0,
+    downloadedBytes: 0,
+    totalBytes: 0,
+  })),
+);
+let error = $state<string | null>(null);
+let minimized = $state<boolean>(false);
+
 export function useModelDownload() {
   const statusQuery = useModelsStatus();
   const downloadMutation = useDownloadModel();
   const queryClient = useQueryClient();
-
-  let isDownloading = $state<boolean>(false);
-  let currentModelIndex = $state<number>(0);
-  let modelProgress = $state<ModelProgress[]>(
-    MODEL_NAMES.map(name => ({
-      name,
-      percent: 0,
-      downloadedBytes: 0,
-      totalBytes: 0,
-    })),
-  );
-  let error = $state<string | null>(null);
-  let minimized = $state<boolean>(false);
 
   const allReady = $derived(statusQuery.data?.all_ready ?? false);
   const isLoading = $derived(statusQuery.isLoading);
