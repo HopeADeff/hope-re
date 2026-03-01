@@ -4,16 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [2.1.2] - 2026-03-01
+## [2.1.3] - 2026-03-01
 
 ### Fixed
 
 - Fix window drag, maximize, and close buttons blocked by dialog overlays on Windows because the `fixed inset-0 z-50` overlay covered the custom titlebar drag region
 - Fix model download dialog being completely unclosable and blocking the entire app with no way to interact with the titlebar while downloading
+- Fix minimized dock positioned at bottom-left where it was not discoverable, move to bottom-right
+- Fix minimize button placed on left side of dialogs inconsistent with close button position, move to top-right
+- Fix invalid `inset-s-4` class on updater dialog minimize button
+- Replace deprecated Tailwind v3 classes with v4 idioms: `outline-none` to `outline-hidden`, arbitrary centering values to fraction utilities, `ring-offset` pattern to `focus-visible:ring` pattern
 
 ### Features
 
-- Add retractable dialog system for model downloader and updater dialogs with minimize button that collapses active background tasks into floating dock icons at bottom-left
+- Add retractable dialog system for model downloader and updater dialogs with minimize button that collapses active background tasks into floating dock icons at bottom-right
 - Add minimized dock component showing real-time download/update progress with animated activity indicators and click-to-restore behavior
 - Add minimize-on-escape support for model download dialog when download is in progress
 
@@ -24,6 +28,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Update updater dialog to hide close button and show minimize button during active download/install
 - Update model download store with `minimized`, `needsDialog`, `dialogOpen`, `minimize()`, and `restore()` for retractable dialog support
 - Update updater store with `minimized`, `isActive`, `minimize()`, and `restore()` for retractable dialog support
+- Replace `MinimizeIcon` with `Minimize2Icon` for clearer minimize affordance in both dialogs
+- Remove redundant minimize button from updater dialog footer, consolidate to top-right icon only
 
 ## [2.1.1] - 2026-03-01
 

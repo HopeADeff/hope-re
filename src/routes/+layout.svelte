@@ -55,7 +55,7 @@
     </main>
   </div>
 
-  <div class="fixed bottom-4 left-4 z-90 flex flex-col gap-2">
+  <div class="fixed bottom-4 right-4 z-90 flex flex-col items-end gap-2">
     <MinimizedDock />
   </div>
 
