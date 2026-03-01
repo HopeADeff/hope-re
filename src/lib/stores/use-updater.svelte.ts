@@ -8,6 +8,7 @@ let downloadProgress = $state<number>(0);
 let contentLength = $state<number>(0);
 let downloadStatus = $state<"idle" | "downloading" | "installing" | "error">("idle");
 let downloadError = $state<string | null>(null);
+let minimized = $state<boolean>(false);
 
 export function useUpdater() {
   const checkQuery = useCheckForUpdate();
@@ -18,6 +19,7 @@ export function useUpdater() {
   const isChecking = $derived(checkQuery.isFetching);
   const isDownloading = $derived(downloadStatus === "downloading");
   const isInstalling = $derived(downloadStatus === "installing");
+  const isActive = $derived(isDownloading || isInstalling);
   const version = $derived(update?.version ?? null);
   const releaseNotes = $derived(update?.body ?? null);
   const error = $derived(downloadError ?? (checkQuery.isError ? String(checkQuery.error) : null));
@@ -88,11 +90,26 @@ export function useUpdater() {
   }
 
   function dismiss() {
+    if (isActive) {
+      minimized = true;
+      return;
+    }
     dialogOpen = false;
+    minimized = false;
     if (downloadStatus === "error") {
       downloadStatus = "idle";
       downloadError = null;
     }
+  }
+
+  function minimize() {
+    minimized = true;
+    dialogOpen = false;
+  }
+
+  function restore() {
+    minimized = false;
+    dialogOpen = true;
   }
 
   function openDialog() {
@@ -114,6 +131,9 @@ export function useUpdater() {
     get isInstalling() {
       return isInstalling;
     },
+    get isActive() {
+      return isActive;
+    },
     get isChecking() {
       return isChecking;
     },
@@ -132,9 +152,14 @@ export function useUpdater() {
     get dialogOpen() {
       return dialogOpen;
     },
+    get minimized() {
+      return minimized;
+    },
     checkForUpdate,
     downloadAndInstall,
     dismiss,
+    minimize,
+    restore,
     openDialog,
   };
 }

@@ -4,7 +4,7 @@
   import { QueryClientProvider } from "@tanstack/svelte-query";
   import { SvelteQueryDevtools } from "@tanstack/svelte-query-devtools";
   import { platform } from "@tauri-apps/plugin-os";
-  import { Header, ResourceDownloadGuard, UpdateDialog, WindowTitle } from "$lib/components";
+  import { Header, MinimizedDock, ResourceDownloadGuard, UpdateDialog, WindowTitle } from "$lib/components";
 
   import "../app.css";
   import { Toaster } from "$lib/components/ui/sonner";
@@ -32,6 +32,9 @@
 
   onMount(async () => {
     await theme.initTheme();
+    if (isWindows) {
+      document.documentElement.dataset.platform = "windows";
+    }
   });
 </script>
 
@@ -50,6 +53,10 @@
         {@render children()}
       </ResourceDownloadGuard>
     </main>
+  </div>
+
+  <div class="fixed bottom-4 left-4 z-90 flex flex-col gap-2">
+    <MinimizedDock />
   </div>
 
   {#if import.meta.env.DEV}
