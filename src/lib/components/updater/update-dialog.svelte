@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CircleArrowUpIcon, LoaderCircleIcon, Minimize2Icon } from "@lucide/svelte";
+  import { CircleArrowUpIcon, LoaderCircleIcon, MinusIcon } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button";
   import * as Dialog from "$lib/components/ui/dialog";
   import { Progress } from "$lib/components/ui/progress";
@@ -40,7 +40,7 @@
         class="absolute end-4 top-4 rounded-lg opacity-50 transition-opacity hover:opacity-100 focus-visible:outline-hidden cursor-pointer"
         aria-label="Minimize to dock"
       >
-        <Minimize2Icon class="size-4" />
+        <MinusIcon class="size-4" />
       </button>
     {/if}
 

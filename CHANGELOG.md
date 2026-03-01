@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Replace near-transparent dock styling with opaque `bg-card` background, full `border-border`, and `ring-1 ring-border/50` outer ring for clear visibility in both light and dark themes
 - Increase icon container background from `bg-primary/10` to `bg-primary/15` for stronger icon presence
 
+### Changed
+
+- Replace `Minimize2Icon` (diagonal shrink arrow) with `MinusIcon` (standard window minimize dash) in model download and updater dialogs for a more recognizable minimize affordance
+
 ## [2.1.3] - 2026-03-01
 
 ### Fixed
